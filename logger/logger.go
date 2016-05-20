@@ -1,9 +1,6 @@
 package logger
 
 import (
-    "os"
-    "strings"
-    
     "github.com/cloudfoundry/gosteno"
 )
 
@@ -18,5 +15,5 @@ func New() *gosteno.Logger {
     }
     
     gosteno.Init(loggingConfig)
-    return gosteno.newLogger("bm_firehose_nozzle")
+    return gosteno.NewLogger("bm_firehose_nozzle")
 }
