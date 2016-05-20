@@ -1,3 +1,5 @@
+/**Copyright Blue Medora Inc. 2016**/
+
 package logger
 
 import (
@@ -28,5 +30,6 @@ func createLogDirectory() {
     if _, err := os.Stat("./logs/"); err == nil {
         os.RemoveAll("./logs")
     }
+    
     os.MkdirAll("./logs/", os.ModePerm)
 }

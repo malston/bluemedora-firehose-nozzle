@@ -3,5 +3,7 @@
     "uaa_username": "user",
     "uaa_password": "password",
     "traffic_controller_url": "wss://doppler.127.0.0.1.com:4443",
-    "use_ssl": true
+    "disable_access_control": false,
+    "use_ssl": true,
+    "idle_timeout_seconds": 60
 }
