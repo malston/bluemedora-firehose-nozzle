@@ -14,7 +14,7 @@ func New() *gosteno.Logger {
         },
         Level:      gosteno.LOG_DEBUG,
         Codec:      gosteno.NewJsonCodec(),
-        EnableLOC:  true
+        EnableLOC:  true,
     }
     
     gosteno.Init(loggingConfig)
