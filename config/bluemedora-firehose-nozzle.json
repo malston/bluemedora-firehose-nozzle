@@ -1,6 +1,6 @@
 {
-    "uaa_url": "",
-    "uaa_username": "user",
+    "uaa_url": "https://uaa.pcf-om2.bluemedora.localnet",
+    "uaa_username": "medora",
     "uaa_password": "password",
     "traffic_controller_url": "wss://doppler.127.0.0.1.com:4443",
     "disable_access_control": false,

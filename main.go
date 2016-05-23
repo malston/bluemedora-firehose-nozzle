@@ -19,7 +19,7 @@ func main() {
     }
     
     nozzle := bluemedorafirehosenozzle.New(config, logger)
-    err = nozzle.Start()
+    nozzle.Start()
     
     if err != nil {
         logger.Fatalf("Error while running nozzle: %s", err.Error())

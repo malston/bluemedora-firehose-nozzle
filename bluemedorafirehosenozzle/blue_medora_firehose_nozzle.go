@@ -4,6 +4,8 @@ package bluemedorafirehosenozzle
 
 import (
     "crypto/tls"
+    "fmt"
+    "time"
     //REST server
     
     "github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
@@ -30,18 +32,20 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
 }
 
 //Start starts consuming events from firehose
-func (nozzle *BlueMedoraFirehoseNozzle) Start() error {
+func (nozzle *BlueMedoraFirehoseNozzle) Start() {
     nozzle.logger.Info("Starting Blue Medora Firehose Nozzle")
     
     var authToken string
-    if !nozzle.config.disableAccessControl {
-        authToken = nozzle.FetchUAAAuthToken()
+    if !nozzle.config.DisableAccessControl {
+        authToken = nozzle.fetchUAAAuthToken()
     }
+    
+    nozzle.collectFromFirehose(authToken)
     
     nozzle.logger.Info("Closing Blue Medora Firehose Nozzle")
 }
 
-func (nozzle *BlueMedoraFirehoseNozzle) FetchUAAAuthToken() string {
+func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
     nozzle.logger.Debug("Fetching UAA authenticaiton token")
     
     UAAClient, err := uaago.NewClient(nozzle.config.UAAURL)
@@ -50,7 +54,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) FetchUAAAuthToken() string {
     }   
     
     var token string
-    token, err = UAAClient.GetAuthToken(nozzle.config.UAAUsername, nozzle.config.UAAPassword, nozzle.config.useSSL)
+    token, err = UAAClient.GetAuthToken(nozzle.config.UAAUsername, nozzle.config.UAAPassword, nozzle.config.UseSSL)
     if err != nil{
         nozzle.logger.Fatalf("Failed to get oauth toke: %s. Verify username and password.", err.Error())
     }
@@ -59,8 +63,21 @@ func (nozzle *BlueMedoraFirehoseNozzle) FetchUAAAuthToken() string {
     return token
 }
 
-func (nozzle *BlueMedoraFirehoseNozzle) CollectFromFirehose(authToken string) {
-    consumer := consumer.New(nozzle.config.trafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.useSSL}, nil)
+func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
+    consumer := consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.UseSSL}, nil)
     consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeout) * time.Second)
     nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
+}
+
+func (nozzle *BlueMedoraFirehoseNozzle) logMessages() {
+    for {
+        select {
+            case envelope := <-nozzle.messages:
+                nozzle.logEnvelope(envelope)
+        }
+    }
+}
+
+func (nozzle *BlueMedoraFirehoseNozzle) logEnvelope(envelope *events.Envelope) {
+    nozzle.logger.Debug(fmt.Sprintf("Received Envelope with Origin <%v>, EventType <%v>, Deployment <%v>, Job <%v>, Index <%v>, IP <%v>", envelope.Origin, envelope.EventType, envelope.Deployment, envelope.Job, envelope.Index, envelope.Ip))
 }
