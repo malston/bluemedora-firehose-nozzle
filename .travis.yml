@@ -14,7 +14,9 @@ before_install:
 - go get -v github.com/mattn/goveralls
 install:
 - go get -v -d -t ./...
-script: - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken=$COVERALLS_TOKEN
-env:
-  global:
-    secure: oiLH1pxHenuC+SSEjAPxje3AOZR8PsT1Pafv1M4fqb0vnzQnIHB3hmunaBBPsjmjc/wc3Dnx/MiUMZQO8oO7HAtKnCAC7LmX/ajFo35rllVGU6aJytAXG0SjmpdlNhIm6aCu8zjb4clrzJNjWn/NPsAo1b9I7GNtUmgWOmhBhjWNjX6Ddk0+85BZySqS+4Di/Sv5+T1lzJwTl8b4JECaqsrzPgT38tDruQ3LPPaweFQQvuZoQJPs5HmHebCHxe7TcFnBo1lT51LG0dmKOvsFIBDjeKUQ/y1cyai5O4A+bMQ4EsNWWZxlZ/kPuScbENLKK1/R/bDVA+lsZwkKv/6FL/fNZABuVY7A2J/PickFXGtXp1+L0UDmK7MNvFYulM2yTF1ivp6ihOe8So2m5c2KZyA0/UOloqcjC+4Nb069/GReiIRLOS6Dn5tLO2eWjp0HslVYfvh61v75K/tK3Lw0ZvXw1FMKXUCnhJQ1/2XwmIf80dvUYKiGVVbiMBaaQADbO+hKsh8464iea7GB38jXL4KNLe6IZ3fYSq6Oz+7/9DPjMD2DuQ4/PI37rjgIIo+1eiTtbjKOy3B3wOYNpcvdiw4o4WmgA+QhI1jsnTLKehkrdgjhupCji0syHE54Mt0n+e0ZWoggjQ4n9pQVPLQGbyxiG7eZUtcnz9Sw8Z7Kh34=
+
+#Not working yet need to figure out coveralls
+# script: - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken=$COVERALLS_TOKEN
+# env:
+#   global:
+#     secure: oiLH1pxHenuC+SSEjAPxje3AOZR8PsT1Pafv1M4fqb0vnzQnIHB3hmunaBBPsjmjc/wc3Dnx/MiUMZQO8oO7HAtKnCAC7LmX/ajFo35rllVGU6aJytAXG0SjmpdlNhIm6aCu8zjb4clrzJNjWn/NPsAo1b9I7GNtUmgWOmhBhjWNjX6Ddk0+85BZySqS+4Di/Sv5+T1lzJwTl8b4JECaqsrzPgT38tDruQ3LPPaweFQQvuZoQJPs5HmHebCHxe7TcFnBo1lT51LG0dmKOvsFIBDjeKUQ/y1cyai5O4A+bMQ4EsNWWZxlZ/kPuScbENLKK1/R/bDVA+lsZwkKv/6FL/fNZABuVY7A2J/PickFXGtXp1+L0UDmK7MNvFYulM2yTF1ivp6ihOe8So2m5c2KZyA0/UOloqcjC+4Nb069/GReiIRLOS6Dn5tLO2eWjp0HslVYfvh61v75K/tK3Lw0ZvXw1FMKXUCnhJQ1/2XwmIf80dvUYKiGVVbiMBaaQADbO+hKsh8464iea7GB38jXL4KNLe6IZ3fYSq6Oz+7/9DPjMD2DuQ4/PI37rjgIIo+1eiTtbjKOy3B3wOYNpcvdiw4o4WmgA+QhI1jsnTLKehkrdgjhupCji0syHE54Mt0n+e0ZWoggjQ4n9pQVPLQGbyxiG7eZUtcnz9Sw8Z7Kh34=
