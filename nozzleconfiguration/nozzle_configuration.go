@@ -18,12 +18,12 @@ type NozzleConfiguration struct {
     TrafficControllerURL    string
     DisableAccessControl    bool
     UseSSL                  bool
-    IdleTimeout             uint32
+    IdleTimeoutSeconds      uint32
 }
 
 //New NozzleConfiguration
-func New(logger *gosteno.Logger) (*NozzleConfiguration, error) {
-    configBuffer, err := ioutil.ReadFile("./config/bluemedora-firehose-nozzle.json")
+func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error) {
+    configBuffer, err := ioutil.ReadFile(configPath)
     
     if err != nil {
         return nil, fmt.Errorf("Unable to load config file bluemedora-firehose-nozzle.json: %s", err)

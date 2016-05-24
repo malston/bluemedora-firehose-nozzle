@@ -13,7 +13,7 @@ func main() {
     logger.Debug("working log")
     
     //Read in config
-    config, err := nozzleconfiguration.New(logger)
+    config, err := nozzleconfiguration.New("./config/bluemedora-firehose-nozzle.json", logger)
     if err != nil {
         logger.Fatalf("Error parsing config file: %s", err.Error())
     }

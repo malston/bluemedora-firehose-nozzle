@@ -55,7 +55,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
     
     var token string
     token, err = UAAClient.GetAuthToken(nozzle.config.UAAUsername, nozzle.config.UAAPassword, nozzle.config.UseSSL)
-    if err != nil{
+    if err != nil {
         nozzle.logger.Fatalf("Failed to get oauth toke: %s. Verify username and password.", err.Error())
     }
     
@@ -65,7 +65,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
 
 func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
     consumer := consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.UseSSL}, nil)
-    consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeout) * time.Second)
+    consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeoutSeconds) * time.Second)
     nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
 }
 
