@@ -1,9 +1,9 @@
 {
-    "UAAURL": "https://uaa.pcf-om2.bluemedora.localnet",
-    "UAAUsername": "medora",
-    "UAAPassword": "password",
-    "TrafficControllerURL": "wss://doppler.127.0.0.1.com:4443",
+    "UAAURL": "https://uaa.pcf.bluemedora.localnet",
+    "UAAUsername": "login",
+    "UAAPassword": "fce47d06c0baaece7754",
+    "TrafficControllerURL": "wss://loggregator.pcf.bluemedora.localnet:443",
     "DisableAccessControl": false,
-    "UseSSL": true,
+    "InsecureSSLSkipVerify": true,
     "IdleTimeoutSeconds": 60
 }

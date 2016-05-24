@@ -17,7 +17,7 @@ type NozzleConfiguration struct {
     UAAPassword             string
     TrafficControllerURL    string
     DisableAccessControl    bool
-    UseSSL                  bool
+    InsecureSSLSkipVerify   bool
     IdleTimeoutSeconds      uint32
 }
 
@@ -36,7 +36,7 @@ func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error
     }
     
     logger.Debug(fmt.Sprintf("Loaded configuration to UAAURL <%s>, UAA Username <%s>, Traffic Controller URL <%s>, Disable Access Control <%v>, Using SSL <%v>", 
-        nozzleConfig.UAAURL, nozzleConfig.UAAUsername, nozzleConfig.TrafficControllerURL, nozzleConfig.DisableAccessControl, nozzleConfig.UseSSL))
+        nozzleConfig.UAAURL, nozzleConfig.UAAUsername, nozzleConfig.TrafficControllerURL, nozzleConfig.DisableAccessControl, nozzleConfig.InsecureSSLSkipVerify))
         
     return &nozzleConfig, nil
 }

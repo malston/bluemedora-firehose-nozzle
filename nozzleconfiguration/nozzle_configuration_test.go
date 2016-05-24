@@ -21,7 +21,7 @@ var (
     testPassword = "password"
     testTrafficControllerURL = "traffic_url"
     testDisableAccessControl = false
-    testUseSSL = false
+    testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
 )
 
@@ -71,9 +71,9 @@ func TestConfigParsing(t *testing.T) {
         t.Errorf("Expected Disable Access Control of %v, but received %v", testDisableAccessControl, config.DisableAccessControl)
     }
 
-    t.Log(fmt.Sprintf("Checking Use SSL... (expected value: %v)", testUseSSL))
-    if config.UseSSL != testUseSSL {
-        t.Errorf("Expected Use SSL of %v, but received %v", testUseSSL, config.UseSSL)
+    t.Log(fmt.Sprintf("Checking Insecure SSL Skip Verify... (expected value: %v)", testInsecureSSLSkipVerify))
+    if config.InsecureSSLSkipVerify != testInsecureSSLSkipVerify {
+        t.Errorf("Expected Insecure SSL Skip Verify of %v, but received %v", testInsecureSSLSkipVerify, config.InsecureSSLSkipVerify)
     }
     
     t.Log(fmt.Sprintf("Checking Idle Timeout... (expected value: %v)", testIdleTimeout))
@@ -95,7 +95,7 @@ func setupEnvironment(t *testing.T) error {
         return fmt.Errorf("Error renaming config file. Ensure bluemedora-firehose-nozzle.json exists in config directory: %s", err)
     }
 
-    message := NozzleConfiguration{testUAAURL, testUsername, testPassword, testTrafficControllerURL, testDisableAccessControl, testUseSSL, testIdleTimeout}
+    message := NozzleConfiguration{testUAAURL, testUsername, testPassword, testTrafficControllerURL, testDisableAccessControl, testInsecureSSLSkipVerify, testIdleTimeout}
     messageBytes, _ := json.Marshal(message)
     
     err = ioutil.WriteFile(configFile, messageBytes, os.ModePerm)

@@ -41,6 +41,10 @@ func (nozzle *BlueMedoraFirehoseNozzle) Start() {
     }
     
     nozzle.collectFromFirehose(authToken)
+    err := nozzle.logMessages()
+    if err != nil {
+        nozzle.logger.Errorf("Error while reading from firehose: %s", err)
+    }
     
     nozzle.logger.Info("Closing Blue Medora Firehose Nozzle")
 }
@@ -54,26 +58,31 @@ func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
     }   
     
     var token string
-    token, err = UAAClient.GetAuthToken(nozzle.config.UAAUsername, nozzle.config.UAAPassword, nozzle.config.UseSSL)
+    token, err = UAAClient.GetAuthToken(nozzle.config.UAAUsername, nozzle.config.UAAPassword, nozzle.config.InsecureSSLSkipVerify)
     if err != nil {
-        nozzle.logger.Fatalf("Failed to get oauth toke: %s. Verify username and password.", err.Error())
+        nozzle.logger.Fatalf("Failed to get oauth token: %s.", err.Error())
     }
     
-    nozzle.logger.Debug("Successfully fetched UAA authentication token")
+    nozzle.logger.Debug(fmt.Sprintf("Successfully fetched UAA authentication token <%s>", token))
     return token
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
-    consumer := consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.UseSSL}, nil)
+    consumer := consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.InsecureSSLSkipVerify}, nil)
+    
+    debugPrinter := &BMDebugPrinter{nozzle.logger}
+    consumer.SetDebugPrinter(debugPrinter)
     consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeoutSeconds) * time.Second)
     nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
 }
 
-func (nozzle *BlueMedoraFirehoseNozzle) logMessages() {
+func (nozzle *BlueMedoraFirehoseNozzle) logMessages() error {
     for {
         select {
             case envelope := <-nozzle.messages:
                 nozzle.logEnvelope(envelope)
+            case err := <-nozzle.errs:
+                return err
         }
     }
 }
