@@ -8,12 +8,17 @@ import (
     "github.com/BlueMedora/bluemedora-firehose-nozzle/bluemedorafirehosenozzle"
 )
 
+var (
+    defaultConfigLocation = "./config/bluemedora-firehose-nozzle.json"
+    defaultLogDirector = "./logs"
+)
+
 func main() {
-    logger := logger.New()
+    logger := logger.New(defaultLogDirector)
     logger.Debug("working log")
     
     //Read in config
-    config, err := nozzleconfiguration.New("./config/bluemedora-firehose-nozzle.json", logger)
+    config, err := nozzleconfiguration.New(defaultConfigLocation, logger)
     if err != nil {
         logger.Fatalf("Error parsing config file: %s", err.Error())
     }

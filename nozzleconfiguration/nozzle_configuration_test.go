@@ -13,6 +13,9 @@ import (
 ) 
 
 var (
+    defaultLogDirector = "./logs"
+    configFile = "../config/bluemedora-firehose-nozzle.json"
+    tempConfigFile = "../config/bluemedora-firehose-nozzle.json.real"
     testUAAURL = "UAAURL"
     testUsername = "username"
     testPassword = "password"
@@ -31,7 +34,7 @@ func TestConfigParsing(t *testing.T) {
     }
     
     t.Log("Creating configuration...")
-    logger := logger.New()
+    logger := logger.New(defaultLogDirector)
     
     //Create new configuration
     var config *NozzleConfiguration
@@ -87,7 +90,7 @@ func TestConfigParsing(t *testing.T) {
 func setupEnvironment(t *testing.T) error {
     t.Log("Setting up environment...")
     
-    err := os.Rename("../config/bluemedora-firehose-nozzle.json", "../config/bluemedora-firehose-nozzle.json.real")
+    err := os.Rename(configFile, tempConfigFile)
     if err != nil {
         return fmt.Errorf("Error renaming config file. Ensure bluemedora-firehose-nozzle.json exists in config directory: %s", err)
     }
@@ -95,7 +98,7 @@ func setupEnvironment(t *testing.T) error {
     message := NozzleConfiguration{testUAAURL, testUsername, testPassword, testTrafficControllerURL, testDisableAccessControl, testUseSSL, testIdleTimeout}
     messageBytes, _ := json.Marshal(message)
     
-    err = ioutil.WriteFile("../config/bluemedora-firehose-nozzle.json", messageBytes, os.ModePerm)
+    err = ioutil.WriteFile(configFile, messageBytes, os.ModePerm)
     if err != nil {
         return fmt.Errorf("Error creating new config file: %s", err)
     }
@@ -106,19 +109,19 @@ func setupEnvironment(t *testing.T) error {
 
 func tearDownEnvironment(t *testing.T) error {
     t.Log("Tearing down test environment...")
-    if _, err := os.Stat("../config/bluemedora-firehose-nozzle.json.real"); os.IsNotExist(err) {
+    if _, err := os.Stat(tempConfigFile); os.IsNotExist(err) {
         t.Log("bluemedora-firehose-nozzle.json.real not found no clean up needed")
         return nil
     }
     
-    if _, err := os.Stat("../config/bluemedora-firehose-nozzle.json"); err == nil {
-        err = os.Remove("../config/bluemedora-firehose-nozzle.json")
+    if _, err := os.Stat(configFile); err == nil {
+        err = os.Remove(configFile)
         if err != nil {
             return fmt.Errorf("Error removing test config file: %s", err)
         }
     }
     
-    err := os.Rename("../config/bluemedora-firehose-nozzle.json.real", "../config/bluemedora-firehose-nozzle.json")
+    err := os.Rename(tempConfigFile, configFile)
     if err != nil {
         return fmt.Errorf("Error renaming config file. Ensure bluemedora-firehose-nozzle.json exists in config directory: %s", err)
     }

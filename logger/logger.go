@@ -4,18 +4,19 @@ package logger
 
 import (
     "os"
+    "fmt"
     
     "github.com/cloudfoundry/gosteno"
 )
 
 //New logger
-func New() *gosteno.Logger {
-    createLogDirectory()
+func New(logDirectory string) *gosteno.Logger {
+    createLogDirectory(logDirectory)
     
     
     loggingConfig := &gosteno.Config {
         Sinks:  []gosteno.Sink{
-           gosteno.NewFileSink("./logs/bm_nozzle.log"),  
+           gosteno.NewFileSink(fmt.Sprintf("%s/bm_nozzle.log", logDirectory)),  
         },
         Level:      gosteno.LOG_DEBUG,
         Codec:      gosteno.NewJsonCodec(),
@@ -26,10 +27,10 @@ func New() *gosteno.Logger {
     return gosteno.NewLogger("bm_firehose_nozzle")
 }
 
-func createLogDirectory() {
-    if _, err := os.Stat("./logs/"); err == nil {
-        os.RemoveAll("./logs")
+func createLogDirectory(logDirectory string) {
+    if _, err := os.Stat(fmt.Sprintf("%s/", logDirectory)); err == nil {
+        os.RemoveAll(fmt.Sprintf("%s", logDirectory))
     }
     
-    os.MkdirAll("./logs/", os.ModePerm)
+    os.MkdirAll(fmt.Sprintf("%s/", logDirectory), os.ModePerm)
 }
