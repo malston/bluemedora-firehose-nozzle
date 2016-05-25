@@ -3,7 +3,7 @@
 package webserver
 
 import (
-    "net/http"
+    // "net/http"
     "sync"
     
     "github.com/cloudfoundry/gosteno"
@@ -19,7 +19,7 @@ type WebServer struct {
     tokens  map[string]*webtoken.Token //Maps token string to token object
 }
 
-func New(logger *gosteno.Logger)
+// func New(logger *gosteno.Logger)
 
 //handle login post
 //handle each resource metric request
