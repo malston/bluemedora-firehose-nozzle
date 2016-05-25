@@ -8,6 +8,7 @@ import (
     "fmt"
     "encoding/json"
     "io/ioutil"
+    "strings"
     
     "github.com/BlueMedora/bluemedora-firehose-nozzle/logger"
 ) 
@@ -27,7 +28,7 @@ var (
 
 func TestConfigParsing(t *testing.T) {
     //Setup Environment
-    err := setupEnvironment(t)
+    err := setupGoodEnvironment(t)
     if err != nil {
         tearDownEnvironment(t)
         t.Fatalf("Setup failed due to: %s", err.Error())
@@ -38,7 +39,7 @@ func TestConfigParsing(t *testing.T) {
     
     //Create new configuration
     var config *NozzleConfiguration
-    config, err = New("../config/bluemedora-firehose-nozzle.json", logger)
+    config, err = New(configFile, logger)
     
     if err != nil {
         tearDownEnvironment(t)
@@ -87,23 +88,120 @@ func TestConfigParsing(t *testing.T) {
     }
 }
 
-func setupEnvironment(t *testing.T) error {
-    t.Log("Setting up environment...")
+func TestBadConfigFile(t *testing.T) {
+    err := setupBadEnvironment(t)
+    if err != nil {
+        tearDownEnvironment(t)
+        t.Fatalf("Setup failed due to: %s", err.Error())
+    }
+    
+    logger := logger.New(defaultLogDirector)
+    
+    //Create new configuration
+    t.Log("Checking loading of bad config file... (expecting error)")
+    _, err = New(configFile, logger)
+    
+    if err != nil {
+        if !strings.Contains(err.Error(), "Error parsing config file bluemedora-firehose-nozzle.json:") {
+            t.Errorf("Expected error containing %s, but received %s", "Error parsing config file bluemedora-firehose-nozzle.json:", err.Error())
+        }
+    } else {
+        t.Errorf("Expected error from loading a bad config file, but loaded correctly")
+    }
+    
+    err = tearDownEnvironment(t)
+    if err != nil {
+        t.Fatalf("Tear down failed due to: %s", err.Error())
+    }
+}
+
+func TestNoConfigFile(t *testing.T) {
+    t.Log("Creating configuration...")
+    logger := logger.New(defaultLogDirector)
+    
+    //Create new configuration
+    t.Log("Checking loading of non-existent file... (expecting error)")
+    _, err := New("fake_file.json", logger)
+    
+    if err != nil {
+        if !strings.Contains(err.Error(), "Unable to load config file bluemedora-firehose-nozzle.json:") {
+            t.Errorf("Expected error containing %s, but received %s", "Unable to load config file bluemedora-firehose-nozzle.json:", err.Error())
+        }
+    } else {
+        t.Errorf("Expected error from loading non-existsent file, but loaded correctly")
+    }
+}
+
+func setupGoodEnvironment(t *testing.T) error {
+    t.Log("Setting up good environment...")
+    
+    err := renameConfigFile(t)
+    if err != nil {
+        return err
+    }
+
+    err = createGoodConfigFile(t)
+    if err != nil {
+        return err
+    }
+    
+    t.Log("Setup good test environment")
+    return nil
+}
+
+func setupBadEnvironment(t *testing.T) error {
+    t.Log("Setting up bad envrionment...")
+    
+    err := renameConfigFile(t)
+    if err != nil {
+        return err
+    }
+    
+    err = createBadConfigFile(t)
+    if err != nil {
+        return err
+    }
+    
+    
+    t.Log("Setup bad test envrionment")
+    return nil
+}
+
+func renameConfigFile(t *testing.T) error {
+    t.Log("Renaming real config file...")
     
     err := os.Rename(configFile, tempConfigFile)
     if err != nil {
         return fmt.Errorf("Error renaming config file. Ensure bluemedora-firehose-nozzle.json exists in config directory: %s", err)
     }
+    
+    t.Log("Renamed real config file")
+    return nil
+}
 
+func createGoodConfigFile(t *testing.T) error {
+    t.Log("Creating good config file...")
     message := NozzleConfiguration{testUAAURL, testUsername, testPassword, testTrafficControllerURL, testDisableAccessControl, testInsecureSSLSkipVerify, testIdleTimeout}
     messageBytes, _ := json.Marshal(message)
     
-    err = ioutil.WriteFile(configFile, messageBytes, os.ModePerm)
+    err := ioutil.WriteFile(configFile, messageBytes, os.ModePerm)
     if err != nil {
-        return fmt.Errorf("Error creating new config file: %s", err)
+        return fmt.Errorf("Error creating good config file: %s", err)
     }
     
-    t.Log("Setup test environment")
+    t.Log("Created good config file")
+    return nil
+}
+
+func createBadConfigFile(t *testing.T) error {
+    t.Log("Creating bad config file...")
+    
+    _, err := os.Create(configFile)
+    if err != nil {
+        return fmt.Errorf("Error creating bad config file: %s", err)
+    }
+    
+    t.Log("Created bad config file")
     return nil
 }
 
