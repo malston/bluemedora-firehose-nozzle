@@ -12,13 +12,14 @@ import (
 
 //NozzleConfiguration represents configuration file
 type NozzleConfiguration struct {
-    UAAURL                  string
-    UAAUsername             string
-    UAAPassword             string
-    TrafficControllerURL    string
-    DisableAccessControl    bool
-    InsecureSSLSkipVerify   bool
-    IdleTimeoutSeconds      uint32
+    UAAURL                      string
+    UAAUsername                 string
+    UAAPassword                 string
+    TrafficControllerURL        string
+    DisableAccessControl        bool
+    InsecureSSLSkipVerify       bool
+    IdleTimeoutSeconds          uint32
+    MetricCacheDurationSeconds  uint32
 }
 
 //New NozzleConfiguration
@@ -35,7 +36,7 @@ func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error
         return nil, fmt.Errorf("Error parsing config file bluemedora-firehose-nozzle.json: %s", err)
     }
     
-    logger.Debug(fmt.Sprintf("Loaded configuration to UAAURL <%s>, UAA Username <%s>, Traffic Controller URL <%s>, Disable Access Control <%v>, Using SSL <%v>", 
+    logger.Debug(fmt.Sprintf("Loaded configuration to UAAURL <%s>, UAA Username <%s>, Traffic Controller URL <%s>, Disable Access Control <%v>, Insecure SSL Skip Verify <%v>", 
         nozzleConfig.UAAURL, nozzleConfig.UAAUsername, nozzleConfig.TrafficControllerURL, nozzleConfig.DisableAccessControl, nozzleConfig.InsecureSSLSkipVerify))
         
     return &nozzleConfig, nil

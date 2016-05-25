@@ -32,7 +32,7 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
 }
 
 //Start starts consuming events from firehose
-func (nozzle *BlueMedoraFirehoseNozzle) Start() {
+func (nozzle *BlueMedoraFirehoseNozzle) Start() error {
     nozzle.logger.Info("Starting Blue Medora Firehose Nozzle")
     
     var authToken string
@@ -41,12 +41,13 @@ func (nozzle *BlueMedoraFirehoseNozzle) Start() {
     }
     
     nozzle.collectFromFirehose(authToken)
-    err := nozzle.logMessages()
+    err := nozzle.processMessages()
     if err != nil {
         nozzle.logger.Errorf("Error while reading from firehose: %s", err)
     }
     
     nozzle.logger.Info("Closing Blue Medora Firehose Nozzle")
+    return err
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
@@ -76,9 +77,12 @@ func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
     nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
 }
 
-func (nozzle *BlueMedoraFirehoseNozzle) logMessages() error {
+func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
+    flushTicker := time.NewTicker(time.Duration(nozzle.config.MetricCacheDurationSeconds) * time.Second)
     for {
         select {
+            case <-flushTicker.C:
+                nozzle.flushMetricCaches()
             case envelope := <-nozzle.messages:
                 nozzle.logEnvelope(envelope)
             case err := <-nozzle.errs:
@@ -89,4 +93,8 @@ func (nozzle *BlueMedoraFirehoseNozzle) logMessages() error {
 
 func (nozzle *BlueMedoraFirehoseNozzle) logEnvelope(envelope *events.Envelope) {
     nozzle.logger.Debug(fmt.Sprintf("Received Envelope with Origin <%v>, EventType <%v>, Deployment <%v>, Job <%v>, Index <%v>, IP <%v>", envelope.Origin, envelope.EventType, envelope.Deployment, envelope.Job, envelope.Index, envelope.Ip))
+}
+
+func (nozzle *BlueMedoraFirehoseNozzle) flushMetricCaches() {
+    nozzle.logger.Debug("Flushing metric caches")
 }

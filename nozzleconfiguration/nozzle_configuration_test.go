@@ -24,6 +24,7 @@ var (
     testDisableAccessControl = false
     testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
+    testMetricCacheDuration = uint32(60)
 )
 
 func TestConfigParsing(t *testing.T) {
@@ -80,6 +81,11 @@ func TestConfigParsing(t *testing.T) {
     t.Log(fmt.Sprintf("Checking Idle Timeout... (expected value: %v)", testIdleTimeout))
     if config.IdleTimeoutSeconds != testIdleTimeout {
         t.Errorf("Expected Idle Timeout of %v, but received %v", testIdleTimeout, config.IdleTimeoutSeconds)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Metric Cache Duration... (expected value: %v)", testMetricCacheDuration))
+    if config.MetricCacheDurationSeconds != testMetricCacheDuration {
+        t.Errorf("Expected Metric Cache Duration of %v, but received %v", testMetricCacheDuration, config.MetricCacheDurationSeconds)
     }
     
     err = tearDownEnvironment(t)
@@ -181,7 +187,13 @@ func renameConfigFile(t *testing.T) error {
 
 func createGoodConfigFile(t *testing.T) error {
     t.Log("Creating good config file...")
-    message := NozzleConfiguration{testUAAURL, testUsername, testPassword, testTrafficControllerURL, testDisableAccessControl, testInsecureSSLSkipVerify, testIdleTimeout}
+    
+    message := NozzleConfiguration{
+        testUAAURL, testUsername, 
+        testPassword, testTrafficControllerURL, 
+        testDisableAccessControl, testInsecureSSLSkipVerify, 
+        testIdleTimeout, testMetricCacheDuration}
+        
     messageBytes, _ := json.Marshal(message)
     
     err := ioutil.WriteFile(configFile, messageBytes, os.ModePerm)
