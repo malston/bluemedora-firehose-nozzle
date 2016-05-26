@@ -38,16 +38,22 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
         tokens: make(map[string]*webtoken.Token),
     }
     
+    webserver.logger.Info("Registering handlers")
     //setup http handlers
     http.HandleFunc("/token", webserver.tokenHandler)
     
     return &webserver
 }
 
-//Start starts webserver listening. Should be run in goroutine
-func (webserver *WebServer) Start(keyLocation string, certLocation string) error {
-    err := http.ListenAndServeTLS(fmt.Sprintf(":%v", webserver.config.WebServerPort), certLocation, keyLocation, nil)
-    return err
+//Start starts webserver listening
+func (webserver *WebServer) Start(keyLocation string, certLocation string) <-chan error {
+    webserver.logger.Infof("Start listening on port %v", webserver.config.WebServerPort)
+    errors := make(chan error, 1)
+    go func() {
+        defer close(errors)
+        errors <- http.ListenAndServeTLS(fmt.Sprintf(":%v", webserver.config.WebServerPort), certLocation, keyLocation, nil)
+    }()
+    return errors
 }
 
 //TokenTimeout is a callback for when a token timesout to remove
@@ -59,17 +65,20 @@ func (webserver *WebServer) TokenTimeout(token *webtoken.Token) {
 
 /**Handlers**/
 func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /token request")
     if r.Method == http.MethodGet {
         username := r.Header.Get(headerUsernameKey)
         password := r.Header.Get(headerPasswordKey)
         
         //Check for username and password
         if username == "" || password == "" {
+            webserver.logger.Debug("No username or password in header")
             w.WriteHeader(http.StatusBadRequest)
             io.WriteString(w, "username and/or password not found in header")
         } else {
             //Check validity of username and password
             if username != webserver.config.UAAUsername && password != webserver.config.UAAPassword {
+                webserver.logger.Debugf("Wrong username and password for user %s", username)
                 w.WriteHeader(http.StatusUnauthorized)
                 io.WriteString(w, "Invalid Username and/or Password")
             } else {
@@ -82,6 +91,8 @@ func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request)
                 
                 w.Header().Set(headerTokenKey, token.TokenValue)
                 w.WriteHeader(http.StatusOK)
+                
+                webserver.logger.Debugf("Successful login generated token <%s>", token.TokenValue)
             }
         }
     } else {
@@ -90,6 +101,4 @@ func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request)
     }
 }
 
-//handle login post
 //handle each resource metric request
-//handle token timeout

@@ -10,13 +10,13 @@ import (
 )
 
 //New logger
-func New(logDirectory string) *gosteno.Logger {
+func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger {
     createLogDirectory(logDirectory)
     
     
     loggingConfig := &gosteno.Config {
         Sinks:  []gosteno.Sink{
-           gosteno.NewFileSink(fmt.Sprintf("%s/bm_nozzle.log", logDirectory)),  
+           gosteno.NewFileSink(fmt.Sprintf("%s/%s", logDirectory, logFile)),  
         },
         Level:      gosteno.LOG_DEBUG,
         Codec:      gosteno.NewJsonCodec(),
@@ -24,7 +24,7 @@ func New(logDirectory string) *gosteno.Logger {
     }
     
     gosteno.Init(loggingConfig)
-    return gosteno.NewLogger("bm_firehose_nozzle")
+    return gosteno.NewLogger(loggerName)
 }
 
 func createLogDirectory(logDirectory string) {

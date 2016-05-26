@@ -13,6 +13,7 @@ import (
     "github.com/cloudfoundry/sonde-go/events"
     "github.com/cloudfoundry/gosteno"
     "github.com/cloudfoundry-incubator/uaago"
+    "github.com/BlueMedora/bluemedora-firehose-nozzle/webserver"
 )
 
 //BlueMedoraFirehoseNozzle consuems data from fire hose and exposes it via REST
@@ -20,14 +21,17 @@ type BlueMedoraFirehoseNozzle struct {
     config      *nozzleconfiguration.NozzleConfiguration
     errs        <-chan error
     messages    <-chan *events.Envelope
+    serverErrs  <-chan error
     logger      *gosteno.Logger
+    server      *webserver.WebServer
 }
 
 //New BlueMedoraFirhoseNozzle
-func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger) *BlueMedoraFirehoseNozzle {
+func New(config *nozzleconfiguration.NozzleConfiguration, server *webserver.WebServer, logger *gosteno.Logger) *BlueMedoraFirehoseNozzle {
     return &BlueMedoraFirehoseNozzle {
         config:     config,
         logger:     logger,
+        server:     server,
     }
 }
 
@@ -39,6 +43,8 @@ func (nozzle *BlueMedoraFirehoseNozzle) Start() error {
     if !nozzle.config.DisableAccessControl {
         authToken = nozzle.fetchUAAAuthToken()
     }
+    
+    nozzle.serverErrs = nozzle.server.Start(webserver.DefaultKeyLocation, webserver.DefaultCertLocation)
     
     nozzle.collectFromFirehose(authToken)
     err := nozzle.processMessages()
@@ -77,6 +83,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
     nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
 }
 
+//Method blocks until error occurs
 func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
     flushTicker := time.NewTicker(time.Duration(nozzle.config.MetricCacheDurationSeconds) * time.Second)
     for {
@@ -84,15 +91,17 @@ func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
             case <-flushTicker.C:
                 nozzle.flushMetricCaches()
             case envelope := <-nozzle.messages:
-                nozzle.logEnvelope(envelope)
+                nozzle.cacheEnvelope(envelope)
+            case err := <-nozzle.serverErrs:
+                return err
             case err := <-nozzle.errs:
                 return err
         }
     }
 }
 
-func (nozzle *BlueMedoraFirehoseNozzle) logEnvelope(envelope *events.Envelope) {
-    nozzle.logger.Debug(fmt.Sprintf("Received Envelope with Origin <%v>, EventType <%v>, Deployment <%v>, Job <%v>, Index <%v>, IP <%v>", envelope.Origin, envelope.EventType, envelope.Deployment, envelope.Job, envelope.Index, envelope.Ip))
+func (nozzle *BlueMedoraFirehoseNozzle) cacheEnvelope(envelope *events.Envelope) {
+    nozzle.logger.Debug("Cache envelope in server")
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) flushMetricCaches() {
