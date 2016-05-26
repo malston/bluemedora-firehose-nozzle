@@ -21,6 +21,7 @@ func TestLogDirectoryCreation(t *testing.T) {
     //Setup Envrionment
     setupEnvrionment(t)
     
+    CreateLogDirectory(logDirectory)
     New(logDirectory, logFile, loggerName)
     
     //See if log file was created
@@ -31,6 +32,7 @@ func TestLogFileContents(t *testing.T) {
     //Setup Enivronment
     setupEnvrionment(t)
     
+    CreateLogDirectory(logDirectory)
     logger := New(logDirectory, logFile, loggerName)
     logger.Info(testLog)
     
