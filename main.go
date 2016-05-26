@@ -21,6 +21,8 @@ const (
 )
 
 func main() {
+    logger.CreateLogDirectory(defaultLogDirectory)
+    
 	logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
 	logger.Debug("working log")
 
@@ -30,6 +32,7 @@ func main() {
 		logger.Fatalf("Error parsing config file: %s", err.Error())
 	}
 
+    //Setup and start nozzle
 	server := createWebServer(config)
 
 	nozzle := bluemedorafirehosenozzle.New(config, server, logger)
@@ -38,8 +41,6 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Error while running nozzle: %s", err.Error())
 	}
-
-	//Start nozzle
 }
 
 func createWebServer(config *nozzleconfiguration.NozzleConfiguration) *webserver.WebServer {

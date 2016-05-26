@@ -15,8 +15,8 @@ import (
 
 //Webserver Constants
 const (
-    DefaultCertLocation = "./certs/cert.perm"
-    DefaultKeyLocation = "./certs/key.perm"
+    DefaultCertLocation = "./certs/cert.pem"
+    DefaultKeyLocation = "./certs/key.pem"
     headerUsernameKey = "username"
     headerPasswordKey = "password"
     headerTokenKey = "token"

@@ -48,9 +48,6 @@ func (nozzle *BlueMedoraFirehoseNozzle) Start() error {
     
     nozzle.collectFromFirehose(authToken)
     err := nozzle.processMessages()
-    if err != nil {
-        nozzle.logger.Errorf("Error while reading from firehose: %s", err)
-    }
     
     nozzle.logger.Info("Closing Blue Medora Firehose Nozzle")
     return err
@@ -93,9 +90,15 @@ func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
             case envelope := <-nozzle.messages:
                 nozzle.cacheEnvelope(envelope)
             case err := <-nozzle.serverErrs:
-                return err
+                if err != nil {
+                    nozzle.logger.Errorf("Error while running webserver: %s", err)
+                    return err
+                }
             case err := <-nozzle.errs:
-                return err
+                if err != nil {
+                    nozzle.logger.Errorf("Error while reading from firehose: %s", err)
+                    return err
+                }
         }
     }
 }

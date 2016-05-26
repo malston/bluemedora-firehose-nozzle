@@ -14,7 +14,7 @@ import (
 ) 
 
 var (
-    defaultLogDirectory = "./logs"
+    defaultLogDirectory = "../logs"
 	nozzleLogFile       = "bm_nozzle.log"
 	nozzleLogName       = "bm_firehose_nozzle"
     

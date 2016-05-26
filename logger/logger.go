@@ -11,9 +11,6 @@ import (
 
 //New logger
 func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger {
-    createLogDirectory(logDirectory)
-    
-    
     loggingConfig := &gosteno.Config {
         Sinks:  []gosteno.Sink{
            gosteno.NewFileSink(fmt.Sprintf("%s/%s", logDirectory, logFile)),  
@@ -27,7 +24,8 @@ func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger
     return gosteno.NewLogger(loggerName)
 }
 
-func createLogDirectory(logDirectory string) {
+//CreateLogDirectory clears out old directory and creates a new one
+func CreateLogDirectory(logDirectory string) {
     if _, err := os.Stat(fmt.Sprintf("%s/", logDirectory)); err == nil {
         os.RemoveAll(fmt.Sprintf("%s", logDirectory))
     }
