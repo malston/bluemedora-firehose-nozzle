@@ -41,6 +41,14 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
     webserver.logger.Info("Registering handlers")
     //setup http handlers
     http.HandleFunc("/token", webserver.tokenHandler)
+    http.HandleFunc("/metron_agents", webserver.metronAgentsHandler)
+    http.HandleFunc("/syslog_drains", webserver.syslogDrainBindersHandler)
+    http.HandleFunc("/etcds", webserver.etcdsHandler)
+    http.HandleFunc("/doppler_servers", webserver.dopplerServersHandler)
+    http.HandleFunc("/diegos", webserver.diegosHandler)
+    http.HandleFunc("/cloud_controllers", webserver.cloudControllersHandler)
+    http.HandleFunc("/traffic_controllers", webserver.trafficControllersHandler)
+    
     
     return &webserver
 }
@@ -59,6 +67,7 @@ func (webserver *WebServer) Start(keyLocation string, certLocation string) <-cha
 //TokenTimeout is a callback for when a token timesout to remove
 func (webserver *WebServer) TokenTimeout(token *webtoken.Token) {
     webserver.mutext.Lock()
+    webserver.logger.Debugf("Removing token %s", token.TokenValue)
     delete(webserver.tokens, token.TokenValue)
     webserver.mutext.Unlock()
 }
@@ -101,4 +110,30 @@ func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request)
     }
 }
 
-//handle each resource metric request
+func (webserver *WebServer) metronAgentsHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /metron_agents request")
+}
+
+func (webserver *WebServer) syslogDrainBindersHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /syslog_drains request")
+}
+
+func (webserver *WebServer) etcdsHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /etcds request")
+}
+
+func (webserver *WebServer) dopplerServersHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /doppler_servers request")
+}
+
+func (webserver *WebServer) diegosHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /diegos request")
+}
+
+func (webserver *WebServer) cloudControllersHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /cloud_controllers request")
+}
+
+func (webserver *WebServer) trafficControllersHandler(w http.ResponseWriter, r *http.Request) {
+    webserver.logger.Info("Received /traffic_controllers request")
+}
