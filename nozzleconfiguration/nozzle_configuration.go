@@ -20,6 +20,7 @@ type NozzleConfiguration struct {
     InsecureSSLSkipVerify       bool
     IdleTimeoutSeconds          uint32
     MetricCacheDurationSeconds  uint32
+    WebServerPort               uint32
 }
 
 //New NozzleConfiguration

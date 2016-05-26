@@ -11,13 +11,16 @@ var (
     tokenTimeout = 60
 )
 
+//TokenTimeout callback when a token times out
+type TokenTimeout func(token *Token)
+
 //InvalidTokenError signals invalid token usage
 type InvalidTokenError struct {
     s string
 }
 
 func (e *InvalidTokenError) Error() string {
-    return e.s
+    return "Invalid Token Error: " + e.s
 }
 
 //Token token used for webserver communication
@@ -30,7 +33,7 @@ type Token struct {
 }
 
 //New creates a new token
-func New() *Token {
+func New(timeoutCallback TokenTimeout) *Token {
     newToken := Token {
         TokenValue:                 GenerateTokenString(),
         validToken:                 true,
@@ -38,22 +41,26 @@ func New() *Token {
         timoutTicker:               time.NewTicker(time.Duration(tokenTimeout) * time.Second),
     }
     
-    go newToken.startTimeout()
+    go newToken.startTimeout(timeoutCallback)
     
     return &newToken
 }
 
-func (token *Token) startTimeout() {
-    select {
-        case <-token.timoutTicker.C:
-            token.mux.Lock()
-            if !token.tokenUsedSinceLastTimout {
-                token.validToken = false
-                return
-            }
-             
-            token.tokenUsedSinceLastTimout = false;
-            token.mux.Unlock()
+func (token *Token) startTimeout(timeoutCallback TokenTimeout) {
+    for {
+        select {
+            case <-token.timoutTicker.C:
+                token.mux.Lock()
+                if !token.tokenUsedSinceLastTimout {
+                    token.validToken = false
+                    token.mux.Unlock()
+                    defer timeoutCallback(token)
+                    return
+                }
+                
+                token.tokenUsedSinceLastTimout = false;
+                token.mux.Unlock()
+        }
     }
 }
 

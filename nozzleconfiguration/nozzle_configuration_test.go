@@ -25,6 +25,7 @@ var (
     testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
     testMetricCacheDuration = uint32(60)
+    testWebServerPort = uint32(8081)
 )
 
 func TestConfigParsing(t *testing.T) {
@@ -86,6 +87,11 @@ func TestConfigParsing(t *testing.T) {
     t.Log(fmt.Sprintf("Checking Metric Cache Duration... (expected value: %v)", testMetricCacheDuration))
     if config.MetricCacheDurationSeconds != testMetricCacheDuration {
         t.Errorf("Expected Metric Cache Duration of %v, but received %v", testMetricCacheDuration, config.MetricCacheDurationSeconds)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Web Server Port... (expected value: %v)", testWebServerPort))
+    if config.WebServerPort != testWebServerPort {
+        t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerPort, config.WebServerPort)
     }
     
     err = tearDownEnvironment(t)
@@ -192,7 +198,8 @@ func createGoodConfigFile(t *testing.T) error {
         testUAAURL, testUsername, 
         testPassword, testTrafficControllerURL, 
         testDisableAccessControl, testInsecureSSLSkipVerify, 
-        testIdleTimeout, testMetricCacheDuration}
+        testIdleTimeout, testMetricCacheDuration,
+        testWebServerPort}
         
     messageBytes, _ := json.Marshal(message)
     
