@@ -3,6 +3,8 @@
 package main
 
 import (
+	"flag"
+	
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/bluemedorafirehosenozzle"
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/logger"
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
@@ -20,8 +22,23 @@ const (
 	webserverLogName = "bm_server"
 )
 
+var (
+	//Mode to run nozzle in. Webserver mode is for debugging purposes only
+	runMode = flag.String("mode", "normal", "Mode to run nozzle `normal` or `webserver`")
+)
+
 func main() {
-    logger.CreateLogDirectory(defaultLogDirectory)
+	flag.Parse()
+	
+	if *runMode == "normal" {
+		normalSetup()
+	} else if *runMode == "webserver" {
+		standUpWebServer()
+	}
+}
+
+func normalSetup() {
+	logger.CreateLogDirectory(defaultLogDirectory)
     
 	logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
 	logger.Debug("working log")
@@ -43,7 +60,28 @@ func main() {
 	}
 }
 
+func standUpWebServer() {
+	logger := logger.New(defaultLogDirectory, webserverLogFile, webserverLogName)
+    
+    //Read in config
+	config, err := nozzleconfiguration.New(defaultConfigLocation, logger)
+	if err != nil {
+		logger.Fatalf("Error parsing config file: %s", err.Error())
+	}
+    
+    server := webserver.New(config, logger)
+    
+    logger.Info("Starting webserver")
+    errors := server.Start(webserver.DefaultKeyLocation, webserver.DefaultCertLocation)
+    
+    select {
+        case err := <-errors:
+            logger.Fatalf("Error while running server: %s", err.Error())
+    }
+}
+
 func createWebServer(config *nozzleconfiguration.NozzleConfiguration) *webserver.WebServer {
 	logger := logger.New(defaultLogDirectory, webserverLogFile, webserverLogName)
 	return webserver.New(config, logger)
 }
+
