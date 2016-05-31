@@ -1,4 +1,5 @@
-/**Copyright Blue Medora Inc. 2016**/
+// Copyright (c) 2016 Blue Medora, Inc. All rights reserved.
+// This file is subject to the terms and conditions defined in the included file 'LICENSE.txt'.
 
 package webtoken
 
