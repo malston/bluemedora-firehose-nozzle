@@ -45,6 +45,8 @@ func (nozzle *BlueMedoraFirehoseNozzle) Start() error {
         authToken = nozzle.fetchUAAAuthToken()
     }
     
+    nozzle.logger.Debugf("Using auth token <%s>", authToken)
+    
     nozzle.serverErrs = nozzle.server.Start(webserver.DefaultKeyLocation, webserver.DefaultCertLocation)
     
     nozzle.collectFromFirehose(authToken)
@@ -105,7 +107,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) cacheEnvelope(envelope *events.Envelope) {
-    nozzle.logger.Debug("Cache envelope in server")
+    nozzle.logger.Debugf("Cache envelope in server %v", envelope)
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) flushMetricCaches() {

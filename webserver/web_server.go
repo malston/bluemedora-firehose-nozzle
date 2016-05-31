@@ -86,7 +86,7 @@ func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request)
 			io.WriteString(w, "username and/or password not found in header")
 		} else {
 			//Check validity of username and password
-			if username != webserver.config.UAAUsername && password != webserver.config.UAAPassword {
+			if username != webserver.config.UAAUsername || password != webserver.config.UAAPassword {
 				webserver.logger.Debugf("Wrong username and password for user %s", username)
 				w.WriteHeader(http.StatusUnauthorized)
 				io.WriteString(w, "Invalid Username and/or Password")

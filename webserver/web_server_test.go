@@ -3,8 +3,6 @@
 
 package webserver
 
-// TODO figure out how to generate certs in order for test to work
-
 import (
 	"fmt"
 	"testing"
