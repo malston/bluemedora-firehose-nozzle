@@ -42,6 +42,7 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
 		logger: logger,
 		config: config,
 		tokens: make(map[string]*webtoken.Token),
+		cache: 	make(map[string]map[string]Resource),
 	}
 
 	webserver.logger.Info("Registering handlers")
