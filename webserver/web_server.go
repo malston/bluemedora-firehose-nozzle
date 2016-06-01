@@ -23,7 +23,30 @@ const (
 	headerPasswordKey   	= "password"
 	headerTokenKey      	= "token"
 	
-	cloudControllerOrigin	= "cc"
+	metronAgentOrigin			= "MetronAgent"
+    syslogDrainBinderOrigin		= "syslog_drain_binder"
+    tpsWatcherOrigin			= "tps_watcher"
+    tpsListenerOrigin			= "tps_listener"
+    stagerOrigin				= "stager"
+    sshProxyOrigin				= "ssh-proxy"
+    senderOrigin				= "sender"
+    routeEmitterOrigin			= "route_emitters"
+    repOrigin					= "rep"
+    receptorOrigin				= "receptor"
+    nsyncListenerOrigin			= "nsync_listener"
+    nsyncBulkerOrigin			= "nsync_bulker"
+    gardenLinuxOrigin			= "garden-linux"
+    fileServerOrigin			= "file_server"
+    fetcherOrigin				= "fetcher"
+    convergerOrigin				= "converger"
+    ccUploaderOrigin			= "cc_uploader"
+    bbsOrigin					= "bbs"
+	auctioneerOrigin			= "auctioneer"
+	etcdOrigin					= "etcd"
+	dopplerServerOrigin			= "DopplerServer"
+	cloudControllerOrigin		= "cc"
+	trafficControllerOrigin		= "LoggregatorTrafficController"
+	goRouterOrigin				= "gorouter"
 )
 
 //WebServer REST endpoint for sending data
@@ -71,6 +94,7 @@ func New(config *nozzleconfiguration.NozzleConfiguration, logger *gosteno.Logger
 	http.HandleFunc("/doppler_servers", webserver.dopplerServersHandler)
 	http.HandleFunc("/cloud_controllers", webserver.cloudControllersHandler)
 	http.HandleFunc("/traffic_controllers", webserver.trafficControllersHandler)
+	http.HandleFunc("/gorouters", webserver.gorouterHandler)
 
 	return &webserver
 }
@@ -224,6 +248,10 @@ func (webserver *WebServer) trafficControllersHandler(w http.ResponseWriter, r *
 	webserver.logger.Info("Received /traffic_controllers request")
 }
 
+func (webserver *WebServer) gorouterHandler(w http.ResponseWriter, r *http.Request) {
+	webserver.logger.Info("Received /gorouters request")
+}
+
 /**Cache Logic**/
 
 //CacheEnvelope caches envelope by origin
@@ -232,7 +260,7 @@ func (webserver *WebServer) CacheEnvelope(envelope *events.Envelope) {
 	defer webserver.mutext.Unlock()
 	
 	key := createEnvelopeKey(envelope)
-	webserver.logger.Debugf("Caching envelope with key %s", key)
+	webserver.logger.Debugf("Caching envelope origin %s with key %s", envelope.GetOrigin(), key)
 	
 	//Find origin map
 	var resourceCache map[string]Resource
