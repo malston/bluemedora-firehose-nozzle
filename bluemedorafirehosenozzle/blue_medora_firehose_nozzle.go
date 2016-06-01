@@ -107,9 +107,9 @@ func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) cacheEnvelope(envelope *events.Envelope) {
-    nozzle.logger.Debugf("Cache envelope in server %v", envelope)
+    nozzle.server.CacheEnvelope(envelope)
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) flushMetricCaches() {
-    nozzle.logger.Debug("Flushing metric caches")
+    nozzle.server.ClearCache()
 }
