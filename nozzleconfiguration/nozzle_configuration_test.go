@@ -1,4 +1,5 @@
-/**Copyright Blue Medora Inc. 2016**/
+// Copyright (c) 2016 Blue Medora, Inc. All rights reserved.
+// This file is subject to the terms and conditions defined in the included file 'LICENSE.txt'.
 
 package nozzleconfiguration
 
@@ -13,10 +14,14 @@ import (
     "github.com/BlueMedora/bluemedora-firehose-nozzle/logger"
 ) 
 
-var (
-    defaultLogDirector = "./logs"
+const (
+    defaultLogDirectory = "../logs"
+	nozzleLogFile       = "bm_nozzle.log"
+	nozzleLogName       = "bm_firehose_nozzle"
+    
     configFile = "../config/bluemedora-firehose-nozzle.json"
     tempConfigFile = "../config/bluemedora-firehose-nozzle.json.real"
+    
     testUAAURL = "UAAURL"
     testUsername = "username"
     testPassword = "password"
@@ -25,6 +30,7 @@ var (
     testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
     testMetricCacheDuration = uint32(60)
+    testWebServerPort = uint32(8081)
 )
 
 func TestConfigParsing(t *testing.T) {
@@ -36,7 +42,7 @@ func TestConfigParsing(t *testing.T) {
     }
     
     t.Log("Creating configuration...")
-    logger := logger.New(defaultLogDirector)
+    logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
     var config *NozzleConfiguration
@@ -88,6 +94,11 @@ func TestConfigParsing(t *testing.T) {
         t.Errorf("Expected Metric Cache Duration of %v, but received %v", testMetricCacheDuration, config.MetricCacheDurationSeconds)
     }
     
+    t.Log(fmt.Sprintf("Checking Web Server Port... (expected value: %v)", testWebServerPort))
+    if config.WebServerPort != testWebServerPort {
+        t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerPort, config.WebServerPort)
+    }
+    
     err = tearDownEnvironment(t)
     if err != nil {
         t.Fatalf("Tear down failed due to: %s", err.Error())
@@ -101,7 +112,7 @@ func TestBadConfigFile(t *testing.T) {
         t.Fatalf("Setup failed due to: %s", err.Error())
     }
     
-    logger := logger.New(defaultLogDirector)
+    logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
     t.Log("Checking loading of bad config file... (expecting error)")
@@ -123,7 +134,7 @@ func TestBadConfigFile(t *testing.T) {
 
 func TestNoConfigFile(t *testing.T) {
     t.Log("Creating configuration...")
-    logger := logger.New(defaultLogDirector)
+    logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
     t.Log("Checking loading of non-existent file... (expecting error)")
@@ -192,7 +203,8 @@ func createGoodConfigFile(t *testing.T) error {
         testUAAURL, testUsername, 
         testPassword, testTrafficControllerURL, 
         testDisableAccessControl, testInsecureSSLSkipVerify, 
-        testIdleTimeout, testMetricCacheDuration}
+        testIdleTimeout, testMetricCacheDuration,
+        testWebServerPort}
         
     messageBytes, _ := json.Marshal(message)
     

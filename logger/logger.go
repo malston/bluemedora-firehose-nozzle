@@ -1,4 +1,5 @@
-/**Copyright Blue Medora Inc. 2016**/
+// Copyright (c) 2016 Blue Medora, Inc. All rights reserved.
+// This file is subject to the terms and conditions defined in the included file 'LICENSE.txt'.
 
 package logger
 
@@ -10,13 +11,10 @@ import (
 )
 
 //New logger
-func New(logDirectory string) *gosteno.Logger {
-    createLogDirectory(logDirectory)
-    
-    
+func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger {
     loggingConfig := &gosteno.Config {
         Sinks:  []gosteno.Sink{
-           gosteno.NewFileSink(fmt.Sprintf("%s/bm_nozzle.log", logDirectory)),  
+           gosteno.NewFileSink(fmt.Sprintf("%s/%s", logDirectory, logFile)),  
         },
         Level:      gosteno.LOG_DEBUG,
         Codec:      gosteno.NewJsonCodec(),
@@ -24,10 +22,11 @@ func New(logDirectory string) *gosteno.Logger {
     }
     
     gosteno.Init(loggingConfig)
-    return gosteno.NewLogger("bm_firehose_nozzle")
+    return gosteno.NewLogger(loggerName)
 }
 
-func createLogDirectory(logDirectory string) {
+//CreateLogDirectory clears out old directory and creates a new one
+func CreateLogDirectory(logDirectory string) {
     if _, err := os.Stat(fmt.Sprintf("%s/", logDirectory)); err == nil {
         os.RemoveAll(fmt.Sprintf("%s", logDirectory))
     }
