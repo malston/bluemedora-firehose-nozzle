@@ -8,6 +8,7 @@ import (
 	"testing"
 	"net/http"
 	"crypto/tls"
+	"time"
 
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/logger"
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
@@ -26,8 +27,13 @@ const (
 	testKeyLocation  = "../certs/key.pem"
 )
 
+var (
+	server *WebServer
+	config *nozzleconfiguration.NozzleConfiguration
+)
+
 func TestEndpoints(t *testing.T) {
-	server, config := createWebServer(t)
+	server, config = createWebServer(t)
 	
 	t.Log("Setting up server envrionment...")
 	testhelpers.GenerateCertFiles()
@@ -116,6 +122,59 @@ func TestEndpoints(t *testing.T) {
 	
 	//Go Router tests
 	goRouterEndPointTest(t, client, token, config.WebServerPort, server)
+	
+	//SSH Proxy tests
+	sshProxyEndPointTest(t, client, token, config.WebServerPort, server)
+	
+	//Sender tests
+	sendersEndPointTest(t, client, token, config.WebServerPort, server)
+	
+	//No Token tests
+	noTokenEndPointTest(t, client, config.WebServerPort, server)
+	
+	//Put request to resource endpoint test
+	resourcePutEndPointTest(t, client, config.WebServerPort)
+	
+	//Cleared cache test
+	noCachedDataTest(t, client, token, config.WebServerPort, server)
+}
+
+func TestTokenTimeout(t *testing.T) {
+	if server == nil {
+		server, config = createWebServer(t)
+	
+		t.Log("Setting up server envrionment...")
+		testhelpers.GenerateCertFiles()
+		errors := server.Start(testKeyLocation, testCertLocation)
+
+		//Handle errors from server
+		go func() {
+			select {
+				case err := <-errors:
+					if err != nil {
+						t.Fatalf("Error with server: %s", err.Error())
+					}
+			}
+		}()
+	}
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	time.Sleep(time.Duration(3) * time.Minute)
+	
+	request := createResourceRequest(t, token, config.WebServerPort, "gorouters")
+	
+	t.Logf("Check if server response to invalid token usage... (expecting status code: %v)", http.StatusUnauthorized)
+	response, err := client.Do(request)
+	
+	if err != nil {
+		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
+	} else if response.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Expecting status code %v, but received %v", http.StatusUnauthorized, response.StatusCode)
+	}
 }
 
 /** Tests **/
@@ -124,11 +183,12 @@ func tokenEndPointTest(t *testing.T, client *http.Client, config *nozzleconfigur
 	badCredentialTokenTest(t, client, config)
 	noCredentialTokenTest(t, client, config)
 	goodTokenRequestTest(t, client, config)
+	putTokenRequestTest(t, client, config)
 	t.Log("Finished token request tests")
 }
 
 func goodTokenRequestTest(t *testing.T, client *http.Client, config *nozzleconfiguration.NozzleConfiguration) {
-	tokenRequest := createTokenRequest(config.UAAUsername, config.UAAPassword, config.WebServerPort, t)
+	tokenRequest := createTokenRequest("GET", config.UAAUsername, config.UAAPassword, config.WebServerPort, t)
 	
 	t.Logf("Check if server responses to good token request... (expecting status code: %v)", http.StatusOK)
 	response, err := client.Do(tokenRequest)
@@ -142,7 +202,7 @@ func goodTokenRequestTest(t *testing.T, client *http.Client, config *nozzleconfi
 }
 
 func badCredentialTokenTest(t *testing.T, client *http.Client, config *nozzleconfiguration.NozzleConfiguration) {
-	tokenRequest := createTokenRequest("baduser", "badPass", config.WebServerPort, t)
+	tokenRequest := createTokenRequest("GET", "baduser", "badPass", config.WebServerPort, t)
 	
 	t.Logf("Check if server responses to a bad credential token request... (expecting status code: %v)", http.StatusUnauthorized)
 	response, err := client.Do(tokenRequest)
@@ -156,7 +216,7 @@ func badCredentialTokenTest(t *testing.T, client *http.Client, config *nozzlecon
 }
 
 func noCredentialTokenTest(t *testing.T, client *http.Client, config *nozzleconfiguration.NozzleConfiguration) {
-	tokenRequest := createTokenRequest("", "", config.WebServerPort, t)
+	tokenRequest := createTokenRequest("GET", "", "", config.WebServerPort, t)
 	
 	t.Logf("Check if server responses to a no credential token request... (expecting status code: %v)", http.StatusBadRequest)
 	response, err := client.Do(tokenRequest)
@@ -166,6 +226,20 @@ func noCredentialTokenTest(t *testing.T, client *http.Client, config *nozzleconf
 	
 	if response.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expecting status code %v, but received %v", http.StatusBadRequest, response.StatusCode)
+	}
+}
+
+func putTokenRequestTest(t *testing.T, client *http.Client, config *nozzleconfiguration.NozzleConfiguration) {
+	tokenRequest := createTokenRequest("PUT", config.UAAUsername, config.UAAPassword, config.WebServerPort, t)
+	
+	t.Logf("Check if server responses to put token request... (expecting status code: %v)", http.StatusMethodNotAllowed)
+	response, err := client.Do(tokenRequest)
+	if err != nil {
+		t.Fatalf("Error occured while requesting token: %s", err.Error())
+	}
+	
+	if response.StatusCode != http.StatusMethodNotAllowed {
+		t.Errorf("Expecting status code %v, but received %v", http.StatusMethodNotAllowed, response.StatusCode)
 	}
 }
 
@@ -529,6 +603,48 @@ func goRouterEndPointTest(t *testing.T, client *http.Client, token string, port 
 	}
 }
 
+func noTokenEndPointTest(t *testing.T, client *http.Client, port uint32, server *WebServer) {
+	cacheEnvelope(goRouterOrigin, server)
+	
+	request := createResourceRequest(t, "", port, "gorouters")
+	
+	t.Logf("Check if server response to no token request... (expecting status code: %v)", http.StatusUnauthorized)
+	response, err := client.Do(request)
+	
+	if err != nil {
+		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
+	} else if response.StatusCode != http.StatusUnauthorized {
+		t.Errorf("Expecting status code %v, but received %v", http.StatusUnauthorized, response.StatusCode)
+	}
+}
+
+func resourcePutEndPointTest(t *testing.T, client *http.Client, port uint32) {
+	request, _ := http.NewRequest("PUT", fmt.Sprintf("https://localhost:%d/%s", port, "gorouters"), nil)
+	
+	t.Logf("Check if server response to put resource endpoint request... (expecting status code: %v)", http.StatusMethodNotAllowed)
+	response, err := client.Do(request)
+	
+	if err != nil {
+		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
+	} else if response.StatusCode != http.StatusMethodNotAllowed {
+		t.Errorf("Expecting status code %v, but received %v", http.StatusMethodNotAllowed, response.StatusCode)
+	}
+}
+
+func noCachedDataTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
+	server.ClearCache()
+	request := createResourceRequest(t, token, port, "gorouters")
+	
+	t.Logf("Check if server response to put resource endpoint request... (expecting status code: %v)", http.StatusNoContent)
+	response, err := client.Do(request)
+	
+	if err != nil {
+		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
+	} else if response.StatusCode != http.StatusNoContent {
+		t.Errorf("Expecting status code %v, but received %v", http.StatusNoContent, response.StatusCode)
+	}
+}
+
 /** Utility Functions **/
 func createWebServer(t *testing.T) (*WebServer, *nozzleconfiguration.NozzleConfiguration) {
 	t.Log("Creating webserver...")
@@ -554,9 +670,9 @@ func createHTTPClient(t *testing.T) *http.Client {
 	return &http.Client {Transport: tr}
 }
 
-func createTokenRequest(username string, password string, port uint32, t *testing.T) *http.Request {
+func createTokenRequest(httpmethod string, username string, password string, port uint32, t *testing.T) *http.Request {
 	t.Log("Creating token request...")
-	request, err := http.NewRequest("GET", fmt.Sprintf("https://localhost:%d/token", port), nil)
+	request, err := http.NewRequest(httpmethod, fmt.Sprintf("https://localhost:%d/token", port), nil)
 	if err != nil {
 		t.Fatalf("Error creating token request: %s", err.Error())
 	}
@@ -572,7 +688,7 @@ func createTokenRequest(username string, password string, port uint32, t *testin
 
 func getToken(t *testing.T, client *http.Client, config *nozzleconfiguration.NozzleConfiguration) string {
 	t.Log("Requesting token...")
-	tokenRequest := createTokenRequest(config.UAAUsername, config.UAAPassword, config.WebServerPort, t)
+	tokenRequest := createTokenRequest("GET", config.UAAUsername, config.UAAPassword, config.WebServerPort, t)
 	response, err := client.Do(tokenRequest)
 	
 	if err != nil {
