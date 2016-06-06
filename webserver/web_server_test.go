@@ -32,7 +32,7 @@ var (
 	config *nozzleconfiguration.NozzleConfiguration
 )
 
-func TestEndpoints(t *testing.T) {
+func TestTokenEndpoint(t *testing.T) {
 	server, config = createWebServer(t)
 	
 	t.Log("Setting up server envrionment...")
@@ -53,109 +53,359 @@ func TestEndpoints(t *testing.T) {
 
 	//Token tests
 	tokenEndPointTest(t, client, config)
+}
+
+func TestNoTokenEndpointRequest(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
 	
-	//Retrieve token for other endpoint test
-	token := getToken(t, client, config)
-	
-	//Metron Agent tests
-	metronAgentEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Syslog Drain Binder tests
-	syslogDrainBinderEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//TPS Watcher tests
-	tpsWatcherEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//TPS Listener tests
-	tpsListenerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Stager tests
-	stagerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Route Emitter tests
-	routeEmittersEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Rep tests
-	repEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Receptor tests
-	receptorEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//NSYNC Listener tests
-	nsyncListenersEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//NSYNC Bulker tests
-	nsyncBulkersEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Garden Linux tests
-	gardenLinuxEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//File Server tests
-	fileServersEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Fetcher tests
-	fetchersEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Converger tests
-	convergerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//CC Uploader tests
-	ccUploaderEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//bbs tests
-	bbsEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Auctioneer tests
-	auctioneerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//etcd tests
-	etcdEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Doppler Servers tests
-	dopplerServerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Cloud Controller tests
-	cloudControllerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Traffic Controller tests
-	trafficControllerEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Go Router tests
-	goRouterEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//SSH Proxy tests
-	sshProxyEndPointTest(t, client, token, config.WebServerPort, server)
-	
-	//Sender tests
-	sendersEndPointTest(t, client, token, config.WebServerPort, server)
+	client := createHTTPClient(t)
 	
 	//No Token tests
 	noTokenEndPointTest(t, client, config.WebServerPort, server)
+}
+
+func TestPutRequestToResourceEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
 	
 	//Put request to resource endpoint test
 	resourcePutEndPointTest(t, client, config.WebServerPort)
+}
+
+func TestNoCacheDataEndpointRequest(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
 	
 	//Cleared cache test
 	noCachedDataTest(t, client, token, config.WebServerPort, server)
 }
 
+func TestMetronAgentEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, metronAgentOrigin, "metron_agents", server)
+}
+
+func TestSyslogDrainBinderEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, syslogDrainBinderOrigin, "syslog_drains", server)
+}
+
+func TestTPSWatcherEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, tpsWatcherOrigin, "tps_watchers", server)
+}
+
+func TestTPSListenerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, tpsListenerOrigin, "tps_listeners", server)
+}
+
+func TestStagerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, stagerOrigin, "stagers", server)
+}
+
+func TestSSHProxiesEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, sshProxyOrigin, "ssh_proxies", server)
+}
+
+func TestSenderEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, senderOrigin, "senders", server)
+}
+
+func TestRouteEmitterEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, routeEmitterOrigin, "route_emitters", server)
+}
+
+func TestRepEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, repOrigin, "reps", server)
+}
+
+func TestReceptorEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, receptorOrigin, "receptors", server)
+}
+
+func TestNSYNCListenerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, nsyncListenerOrigin, "nsync_listeners", server)
+}
+
+func TestNSYNCBulkerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, nsyncBulkerOrigin, "nsync_bulkers", server)
+}
+
+func TestGardenLinuxEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, gardenLinuxOrigin, "garden_linuxs", server)
+}
+
+func TestFileServerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, fileServerOrigin, "file_servers", server)
+}
+
+func TestFetcherEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, fetcherOrigin, "fetchers", server)
+}
+
+func TestConvergerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, convergerOrigin, "convergers", server)
+}
+
+func TestCCUploaderEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, ccUploaderOrigin, "cc_uploaders", server)
+}
+
+func TestbbsEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, bbsOrigin, "bbs", server)
+}
+
+func TestAuctioneerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, auctioneerOrigin, "auctioneers", server)
+}
+
+func TestetcdEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, etcdOrigin, "etcds", server)
+}
+
+func TestDopplerServerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, dopplerServerOrigin, "doppler_servers", server)
+}
+
+func TestCloudControllerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, cloudControllerOrigin, "cloud_controllers", server)
+}
+
+func TestTrafficControllerEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, trafficControllerOrigin, "traffic_controllers", server)
+}
+
+func TestGoRouterEndpoint(t *testing.T) {
+	if server == nil {
+		t.Fatalf("Server failed to initalize in first test")
+	}	
+	
+	client := createHTTPClient(t)
+	
+	//Retrieve token for other endpoint test
+	token := getToken(t, client, config)
+	
+	endPointTest(t, client, token, config.WebServerPort, goRouterOrigin, "gorouters", server)
+}
+
 func TestTokenTimeout(t *testing.T) {
 	if server == nil {
-		server, config = createWebServer(t)
-	
-		t.Log("Setting up server envrionment...")
-		testhelpers.GenerateCertFiles()
-		errors := server.Start(testKeyLocation, testCertLocation)
-
-		//Handle errors from server
-		go func() {
-			select {
-				case err := <-errors:
-					if err != nil {
-						t.Fatalf("Error with server: %s", err.Error())
-					}
-			}
-		}()
+		t.Fatalf("Server failed to initalize in first test")
 	}
 	
 	client := createHTTPClient(t)
@@ -243,357 +493,12 @@ func putTokenRequestTest(t *testing.T, client *http.Client, config *nozzleconfig
 	}
 }
 
-func metronAgentEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(metronAgentOrigin, server)
+func endPointTest(t *testing.T, client *http.Client, token string, port uint32, endPointOrigin string, endPointString string, server *WebServer) {
+	cacheEnvelope(endPointOrigin, server)
 	
-	request := createResourceRequest(t, token, port, "metron_agents")
+	request := createResourceRequest(t, token, port, endPointString)
 	
-	t.Logf("Check if server response to valid /metron_agents request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func syslogDrainBinderEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(syslogDrainBinderOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "syslog_drains")
-	
-	t.Logf("Check if server response to valid /syslog_drains request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func tpsWatcherEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(tpsWatcherOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "tps_watchers")
-	
-	t.Logf("Check if server response to valid /tps_watchers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func tpsListenerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(tpsListenerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "tps_listeners")
-	
-	t.Logf("Check if server response to valid /tps_listeners request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func stagerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(stagerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "stagers")
-	
-	t.Logf("Check if server response to valid /stagers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func sshProxyEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(sshProxyOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "ssh_proxies")
-	
-	t.Logf("Check if server response to valid /ssh_proxies request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func sendersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(senderOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "senders")
-	
-	t.Logf("Check if server response to valid /senders request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func routeEmittersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(routeEmitterOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "route_emitters")
-	
-	t.Logf("Check if server response to valid /route_emitters request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func repEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(repOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "reps")
-	
-	t.Logf("Check if server response to valid /reps request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func receptorEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(receptorOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "receptors")
-	
-	t.Logf("Check if server response to valid /receptors request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func nsyncListenersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(nsyncListenerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "nsync_listeners")
-	
-	t.Logf("Check if server response to valid /nsync_listeners request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func nsyncBulkersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(nsyncBulkerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "nsync_bulkers")
-	
-	t.Logf("Check if server response to valid /nsync_bulkers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func gardenLinuxEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(gardenLinuxOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "garden_linuxs")
-	
-	t.Logf("Check if server response to valid /garden_linuxs request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func fileServersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(fileServerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "file_servers")
-	
-	t.Logf("Check if server response to valid /file_servers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func fetchersEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(fetcherOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "fetchers")
-	
-	t.Logf("Check if server response to valid /fetchers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func convergerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(convergerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "convergers")
-	
-	t.Logf("Check if server response to valid /convergers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func ccUploaderEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(ccUploaderOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "cc_uploaders")
-	
-	t.Logf("Check if server response to valid /cc_uploaders request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func bbsEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(bbsOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "bbs")
-	
-	t.Logf("Check if server response to valid /bbs request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func auctioneerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(auctioneerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "auctioneers")
-	
-	t.Logf("Check if server response to valid /auctioneers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func etcdEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(etcdOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "etcds")
-	
-	t.Logf("Check if server response to valid /etcds request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func dopplerServerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(dopplerServerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "doppler_servers")
-	
-	t.Logf("Check if server response to valid /doppler_servers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func cloudControllerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(cloudControllerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "cloud_controllers")
-	
-	t.Logf("Check if server response to valid /cloud_controllers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func trafficControllerEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(trafficControllerOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "traffic_controllers")
-	
-	t.Logf("Check if server response to valid /traffic_controllers request... (expecting status code: %v)", http.StatusOK)
-	response, err := client.Do(request)
-	
-	if err != nil {
-		t.Errorf("Error occured while hitting endpoint: %s", err.Error())
-	} else if response.StatusCode != http.StatusOK {
-		t.Errorf("Expecting status code %v, but received %v", http.StatusOK, response.StatusCode)
-	}
-}
-
-func goRouterEndPointTest(t *testing.T, client *http.Client, token string, port uint32, server *WebServer) {
-	cacheEnvelope(goRouterOrigin, server)
-	
-	request := createResourceRequest(t, token, port, "gorouters")
-	
-	t.Logf("Check if server response to valid /gorouters request... (expecting status code: %v)", http.StatusOK)
+	t.Logf("Check if server response to valid /%s request... (expecting status code: %v)", endPointString, http.StatusOK)
 	response, err := client.Do(request)
 	
 	if err != nil {
