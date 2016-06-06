@@ -1,7 +1,11 @@
 {
-    "uaa_url": "",
-    "uaa_username": "user",
-    "uaa_password": "password",
-    "traffic_controller_url": "wss://doppler.127.0.0.1.com:4443",
-    "use_ssl": true
+    "UAAURL": "https://uaa.pcf.bluemedora.localnet",
+    "UAAUsername": "apps_metrics_processing",
+    "UAAPassword": "a4bc4f225196e0b422f6",
+    "TrafficControllerURL": "wss://doppler.pcf.bluemedora.localnet:443",
+    "DisableAccessControl": false,
+    "InsecureSSLSkipVerify": true,
+    "IdleTimeoutSeconds": 60,
+    "MetricCacheDurationSeconds": 60,
+    "WebServerPort": 8081
 }
