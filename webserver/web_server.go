@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"sync"
+	"encoding/json"
 
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
 	"github.com/BlueMedora/bluemedora-firehose-nozzle/webtoken"
@@ -22,31 +23,6 @@ const (
 	headerUsernameKey   	= "username"
 	headerPasswordKey   	= "password"
 	headerTokenKey      	= "token"
-	
-	metronAgentOrigin			= "MetronAgent"
-    syslogDrainBinderOrigin		= "syslog_drain_binder"
-    tpsWatcherOrigin			= "tps_watcher"
-    tpsListenerOrigin			= "tps_listener"
-    stagerOrigin				= "stager"
-    sshProxyOrigin				= "ssh-proxy"
-    senderOrigin				= "sender"
-    routeEmitterOrigin			= "route_emitters"
-    repOrigin					= "rep"
-    receptorOrigin				= "receptor"
-    nsyncListenerOrigin			= "nsync_listener"
-    nsyncBulkerOrigin			= "nsync_bulker"
-    gardenLinuxOrigin			= "garden-linux"
-    fileServerOrigin			= "file_server"
-    fetcherOrigin				= "fetcher"
-    convergerOrigin				= "converger"
-    ccUploaderOrigin			= "cc_uploader"
-    bbsOrigin					= "bbs"
-	auctioneerOrigin			= "auctioneer"
-	etcdOrigin					= "etcd"
-	dopplerServerOrigin			= "DopplerServer"
-	cloudControllerOrigin		= "cc"
-	trafficControllerOrigin		= "LoggregatorTrafficController"
-	goRouterOrigin				= "gorouter"
 )
 
 //WebServer REST endpoint for sending data
@@ -158,98 +134,123 @@ func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request)
 
 func (webserver *WebServer) metronAgentsHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /metron_agents request")
+	webserver.processResourceRequest(metronAgentOrigin, w, r)
+	
 }
 
 func (webserver *WebServer) syslogDrainBindersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /syslog_drains request")
+	webserver.processResourceRequest(syslogDrainBinderOrigin, w, r)
 }
 
 func (webserver *WebServer) tpsWatcherHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /tps_watchers request")
+	webserver.processResourceRequest(tpsWatcherOrigin, w, r)
 }
 
 func (webserver *WebServer) tpsListenersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /tps_listeners request")
+	webserver.processResourceRequest(tpsListenerOrigin, w, r)
 }
 
 func (webserver *WebServer) stagerHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /stagers request")
+	webserver.processResourceRequest(stagerOrigin, w, r)
 }
 
 func (webserver *WebServer) sshProxyHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /ssh_proxies request")
+	webserver.processResourceRequest(sshProxyOrigin, w, r)
 }
 
 func (webserver *WebServer) senderHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /senders request")
+	webserver.processResourceRequest(senderOrigin, w, r)
 }
 
 func (webserver *WebServer) routeEmitterHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /route_emitters request")
+	webserver.processResourceRequest(routeEmitterOrigin, w, r)
 }
 
 func (webserver *WebServer) repHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /reps request")
+	webserver.processResourceRequest(repOrigin, w, r)
 }
 
 func (webserver *WebServer) receptorHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /receptors request")
+	webserver.processResourceRequest(receptorOrigin, w, r)
 }
 
 func (webserver *WebServer) nsyncListenerHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /nsync_listeners request")
+	webserver.processResourceRequest(nsyncListenerOrigin, w, r)
 }
 
 func (webserver *WebServer) nsyncBulkerHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /nsync_bulkers request")
+	webserver.processResourceRequest(nsyncBulkerOrigin, w, r)
 }
 
 func (webserver *WebServer) gardenLinuxHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /garden_linuxs request")
+	webserver.processResourceRequest(gardenLinuxOrigin, w, r)
 }
 
 func (webserver *WebServer) fileServersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /file_servers request")
+	webserver.processResourceRequest(fileServerOrigin, w, r)
 }
 
 func (webserver *WebServer) fetcherHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /fetchers request")
+	webserver.processResourceRequest(fetcherOrigin, w, r)
 }
 
 func (webserver *WebServer) convergerHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /convergers request")
+	webserver.processResourceRequest(convergerOrigin, w, r)
 }
 
 func (webserver *WebServer) ccUploaderHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /cc_uploaders request")
+	webserver.processResourceRequest(ccUploaderOrigin, w, r)
 }
 
 func (webserver *WebServer) bbsHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /bbs request")
+	webserver.processResourceRequest(bbsOrigin, w, r)
 }
 
 func (webserver *WebServer) auctioneerHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /auctioneers request")
+	webserver.processResourceRequest(auctioneerOrigin, w, r)
 }
 
 func (webserver *WebServer) etcdsHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /etcds request")
+	webserver.processResourceRequest(etcdOrigin, w, r)
 }
 
 func (webserver *WebServer) dopplerServersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /doppler_servers request")
+	webserver.processResourceRequest(dopplerServerOrigin, w, r)
 }
 
 func (webserver *WebServer) cloudControllersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /cloud_controllers request")
+	webserver.processResourceRequest(cloudControllerOrigin, w, r)
 }
 
 func (webserver *WebServer) trafficControllersHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /traffic_controllers request")
+	webserver.processResourceRequest(trafficControllerOrigin, w, r)
 }
 
 func (webserver *WebServer) gorouterHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /gorouters request")
+	webserver.processResourceRequest(goRouterOrigin, w, r)
 }
 
 /**Cache Logic**/
@@ -300,3 +301,47 @@ func (webserver *WebServer) ClearCache() {
 	webserver.cache = make(map[string]map[string]Resource)
 }
 
+func (webserver *WebServer) processResourceRequest(originType string, w http.ResponseWriter, r *http.Request) {
+	webserver.mutext.Lock()
+	defer webserver.mutext.Unlock()
+	
+	if r.Method == http.MethodGet {
+		tokenString := r.Header.Get(headerTokenKey)
+		
+		token := webserver.tokens[tokenString]
+		
+		if token == nil || !token.IsTokenValid() {
+			webserver.logger.Debugf("Invalid token %s supplied", tokenString)
+			w.WriteHeader(http.StatusUnauthorized)
+			io.WriteString(w, fmt.Sprintf("Invalid token %s supplied", tokenString))
+		} else {
+			webserver.logger.Debugf("Valid token %s supplied", tokenString)
+			token.UseToken()
+			webserver.sendOriginBytes(originType, w)
+		}		
+	} else {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		io.WriteString(w, fmt.Sprintf("Unsupported http method %s", r.Method))
+	}
+}
+
+func (webserver *WebServer) sendOriginBytes(originType string, w http.ResponseWriter) {
+	resourceMap := webserver.cache[originType]
+	
+	var messageBytes []byte
+	
+	if resourceMap == nil {
+		w.WriteHeader(http.StatusNoContent)
+		messageBytes = []byte("{}")
+	} else {
+		w.WriteHeader(http.StatusOK)
+		values := getValues(resourceMap)
+		messageBytes, _ = json.Marshal(values)
+	}
+	
+	_, err := w.Write(messageBytes)
+	
+	if err != nil {
+		webserver.logger.Errorf("Error while answering end point call for origin %s: %s", originType, err.Error())
+	}
+}

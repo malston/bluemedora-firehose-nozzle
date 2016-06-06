@@ -10,6 +10,33 @@ import (
     "github.com/cloudfoundry/gosteno"
 )
 
+const (
+    metronAgentOrigin			= "MetronAgent"
+    syslogDrainBinderOrigin		= "syslog_drain_binder"
+    tpsWatcherOrigin			= "tps_watcher"
+    tpsListenerOrigin			= "tps_listener"
+    stagerOrigin				= "stager"
+    sshProxyOrigin				= "ssh-proxy"
+    senderOrigin				= "sender"
+    routeEmitterOrigin			= "route_emitters"
+    repOrigin					= "rep"
+    receptorOrigin				= "receptor"
+    nsyncListenerOrigin			= "nsync_listener"
+    nsyncBulkerOrigin			= "nsync_bulker"
+    gardenLinuxOrigin			= "garden-linux"
+    fileServerOrigin			= "file_server"
+    fetcherOrigin				= "fetcher"
+    convergerOrigin				= "converger"
+    ccUploaderOrigin			= "cc_uploader"
+    bbsOrigin					= "bbs"
+	auctioneerOrigin			= "auctioneer"
+	etcdOrigin					= "etcd"
+	dopplerServerOrigin			= "DopplerServer"
+	cloudControllerOrigin		= "cc"
+	trafficControllerOrigin		= "LoggregatorTrafficController"
+	goRouterOrigin				= "gorouter"
+)
+
 //Resource represents cloud controller data
 type Resource struct {
     Deployment      string
@@ -38,4 +65,14 @@ func addMetric(envelope *events.Envelope, valueMetricMap map[string]float64, cou
     } else {
 		logger.Errorf("Unkown event type %s", envelope.GetEventType())
 	}
+}
+
+func getValues(resourceMap map[string]Resource) []Resource {
+    resources := make([]Resource, 0, len(resourceMap))
+    
+    for _, resource := range resourceMap {
+        resources = append(resources, resource)
+    }
+    
+    return resources
 }
