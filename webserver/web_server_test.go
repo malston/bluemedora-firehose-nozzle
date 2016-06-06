@@ -413,6 +413,7 @@ func TestTokenTimeout(t *testing.T) {
 	//Retrieve token for other endpoint test
 	token := getToken(t, client, config)
 	
+	t.Log("Waiting 3 minutes to enusre token invalidates")
 	time.Sleep(time.Duration(3) * time.Minute)
 	
 	request := createResourceRequest(t, token, config.WebServerPort, "gorouters")

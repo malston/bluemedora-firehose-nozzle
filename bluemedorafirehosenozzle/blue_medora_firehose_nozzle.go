@@ -7,7 +7,6 @@ import (
     "crypto/tls"
     "fmt"
     "time"
-    //REST server
     
     "github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
     "github.com/cloudfoundry/noaa/consumer"
