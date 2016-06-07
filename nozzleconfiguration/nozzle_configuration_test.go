@@ -42,6 +42,7 @@ func TestConfigParsing(t *testing.T) {
     }
     
     t.Log("Creating configuration...")
+    logger.CreateLogDirectory(defaultLogDirectory)
     logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
@@ -112,6 +113,7 @@ func TestBadConfigFile(t *testing.T) {
         t.Fatalf("Setup failed due to: %s", err.Error())
     }
     
+    logger.CreateLogDirectory(defaultLogDirectory)
     logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
@@ -134,6 +136,7 @@ func TestBadConfigFile(t *testing.T) {
 
 func TestNoConfigFile(t *testing.T) {
     t.Log("Creating configuration...")
+    logger.CreateLogDirectory(defaultLogDirectory)
     logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
     
     //Create new configuration
