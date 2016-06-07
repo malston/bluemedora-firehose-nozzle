@@ -9,11 +9,12 @@ import (
     "time"
     
     "github.com/BlueMedora/bluemedora-firehose-nozzle/nozzleconfiguration"
+    "github.com/BlueMedora/bluemedora-firehose-nozzle/webserver"
     "github.com/cloudfoundry/noaa/consumer"
     "github.com/cloudfoundry/sonde-go/events"
     "github.com/cloudfoundry/gosteno"
     "github.com/cloudfoundry-incubator/uaago"
-    "github.com/BlueMedora/bluemedora-firehose-nozzle/webserver"
+    "github.com/gorilla/websocket"
 )
 
 //BlueMedoraFirehoseNozzle consuems data from fire hose and exposes it via REST
@@ -23,6 +24,7 @@ type BlueMedoraFirehoseNozzle struct {
     messages    <-chan *events.Envelope
     serverErrs  <-chan error
     logger      *gosteno.Logger
+    consumer    *consumer.Consumer
     server      *webserver.WebServer
 }
 
@@ -74,12 +76,12 @@ func (nozzle *BlueMedoraFirehoseNozzle) fetchUAAAuthToken() string {
 }
 
 func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
-    consumer := consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.InsecureSSLSkipVerify}, nil)
+    nozzle.consumer = consumer.New(nozzle.config.TrafficControllerURL, &tls.Config{InsecureSkipVerify: nozzle.config.InsecureSSLSkipVerify}, nil)
     
     debugPrinter := &BMDebugPrinter{nozzle.logger}
-    consumer.SetDebugPrinter(debugPrinter)
-    consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeoutSeconds) * time.Second)
-    nozzle.messages, nozzle.errs = consumer.Firehose("bluemedora-nozzle", authToken)
+    nozzle.consumer.SetDebugPrinter(debugPrinter)
+    nozzle.consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeoutSeconds) * time.Second)
+    nozzle.messages, nozzle.errs = nozzle.consumer.Firehose("bluemedora-nozzle", authToken)
 }
 
 //Method blocks until error occurs
@@ -98,7 +100,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) processMessages() error {
                 }
             case err := <-nozzle.errs:
                 if err != nil {
-                    nozzle.logger.Errorf("Error while reading from firehose: %s", err)
+                    nozzle.handleError(err)
                     return err
                 }
         }
@@ -111,4 +113,24 @@ func (nozzle *BlueMedoraFirehoseNozzle) cacheEnvelope(envelope *events.Envelope)
 
 func (nozzle *BlueMedoraFirehoseNozzle) flushMetricCaches() {
     nozzle.server.ClearCache()
+}
+
+func (nozzle *BlueMedoraFirehoseNozzle) handleError(err error) {
+    switch closeError := err.(type) {
+        case *websocket.CloseError:
+        switch closeError.Code {
+            case websocket.CloseNormalClosure:
+            	nozzle.logger.Info("Connection closed normally")
+            case websocket.ClosePolicyViolation:
+                nozzle.logger.Errorf("Error while reading from firehose: %s", err.Error())
+                nozzle.logger.Errorf("Disconnect due to nozzle not keeping up. Scale nozzle to prevent this problem.")
+            default:
+                nozzle.logger.Errorf("Error while reading from firehose: %s", err.Error())
+        }
+        default:
+            nozzle.logger.Errorf("Error while reading from firehose: %s", err.Error())
+    }
+
+    nozzle.consumer.Close()
+    nozzle.flushMetricCaches()
 }
