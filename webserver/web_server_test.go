@@ -48,6 +48,9 @@ func TestTokenEndpoint(t *testing.T) {
 				}
 		}
 	}()
+
+	t.Log("Waiting a minute to allow total setup of webserver on travis")
+	time.Sleep(time.Duration(1) * time.Minute)
 	
 	client := createHTTPClient(t)
 
@@ -561,9 +564,6 @@ func createWebServer(t *testing.T) (*WebServer, *nozzleconfiguration.NozzleConfi
 	if err != nil {
 		t.Fatalf("Error while loading configuration: %s", err.Error())
 	}
-
-	t.Log("Waiting a minute to allow total setup of webserver on traivs")
-	time.Sleep(time.Duration(1) * time.Minute)
 
 	t.Log("Created webserver")
 	return New(config, logger), config
