@@ -5,10 +5,6 @@ language: go
 go:
 - 1.6
 - tip
-matrix:
-  allow_failures:
-  - go: tip
-  - script: go test -v webserver/*.go
 before_install:
 - go get -v github.com/golang/lint/golint
 - go get -v golang.org/x/tools/cmd/cover
@@ -21,6 +17,10 @@ script:
 - go test -v logger/*.go
 - go test -v webserver/*.go
 - go test -v webtoken/*.go
+matrix:
+  allow_failures:
+  - go: tip
+  - script: go test -v webserver/*.go
 
 #Not working yet need to figure out coveralls
 # script: - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken=$COVERALLS_TOKEN
