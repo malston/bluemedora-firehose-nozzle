@@ -562,6 +562,9 @@ func createWebServer(t *testing.T) (*WebServer, *nozzleconfiguration.NozzleConfi
 		t.Fatalf("Error while loading configuration: %s", err.Error())
 	}
 
+	t.Log("Waiting a minute to allow total setup of webserver on traivs")
+	time.Sleep(time.Duration(1) * time.Minute)
+
 	t.Log("Created webserver")
 	return New(config, logger), config
 }
