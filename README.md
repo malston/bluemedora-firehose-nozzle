@@ -3,7 +3,8 @@
 
 The **bluemedora-firehose-nozzle** is a Cloud Foundry component which collects metrics for the Loggregator Firehose and exposes them via a RESTful API.
 
-##Configure Cloud Foundry UAA for Firehose Nozzle
+## Configure Cloud Foundry UAA for Firehose Nozzle
+
 The Blue Medora nozzle requires a UAA user who is authorized to access the loggregator firehose. You can add a user by editing your Cloud Foundry manifest to include the details about this user under the **properties.uaa.clients** section. Example configuration would look like:
 
 ```
@@ -21,7 +22,8 @@ properties:
 
 For more on setting up a nozzle user refer to Cloud Foundry [documentation](https://docs.cloudfoundry.org/loggregator/nozzle-tutorial.html).
 
-##Configuring Nozzle
+## Configuring Nozzle
+
 The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-firehose-nozzle.json`, to successfully connect to the firehose and expose a RESTful API. Here is an example configuration of the file:
 
 ```
@@ -35,7 +37,8 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
     "IdleTimeoutSeconds": 60,
     "MetricCacheDurationSeconds": 60,
     "WebServerPort": 8081
-}```
+}
+```
 
 |Config Field | Description |
 |:-----------|:-----------|
@@ -49,7 +52,8 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 | MetricCacheDurationSeconds | The amount of time, in seconds, the RESTful API web server will cache metric data. The higher this duration the less likely the data will be correct for a certain metric as it could hold stale data. |
 | WebServerPort | Port to connect to the RESTful API |
 
-##Running
+## Running
+
 To run the Blue Medora nozzle simple execute:
 
 ```
