@@ -59,3 +59,63 @@ To run the Blue Medora nozzle simple execute:
 ```
 go run main.go
 ```
+## Webserver
+
+The webserver is how metrics can be pulled out of the nozzle. It provides a RESTful API that requires an authentication token. 
+
+### Token Request 
+
+A token can be requested from the `/token` endpoint. A token times out after 60 seconds. In order to request a token a `GET` with the two header pairs
+`username` and `password` with values that correspond to the UAA user in the `bluemedora-firehose-nozzle.json` config.
+
+If a successful login occurs the response will contain a header pair of `token` and the value will be your token.
+
+### Metric Endpoints
+
+Once a valid token is acquired a `GET` request with the header pair `token` and value of your token can be sent to one of the following endpoints:
+
+* `/metron_agents`
+* `/syslog_drains`
+* `/tps_watchers`
+* `/tps_listeners`
+* `/stagers`
+* `/ssh_proxies`
+* `/senders`
+* `/route_emitters`
+* `/reps`
+* `/receptors`
+* `/nsync_listeners`
+* `/nsync_bulkers`
+* `/garden_linuxs`
+* `/file_servers`
+* `/fetchers`
+* `/convergers`
+* `/cc_uploaders`
+* `/bbs`
+* `/auctioneers`
+* `/etcds`
+* `/doppler_servers`
+* `/cloud_controllers`
+* `/traffic_controllers`
+* `/gorouters`
+
+A JSON response will be sent in the following form:
+
+```
+[
+   {
+      "Deployment":"deployment_name",
+      "Job":"job_name",
+      "Index":"0",
+      "IP":"X.X.X.X",
+      "ValueMetrics":{
+         "MetricName":integer_value,
+         "MetricName":integer_value
+      },
+      "CounterMetrics":{
+         "MetricName":integer_value,
+         "MetricName":integer_value
+      }
+   }
+]
+```
