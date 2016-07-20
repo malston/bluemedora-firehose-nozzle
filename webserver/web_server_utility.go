@@ -18,7 +18,7 @@ const (
     stagerOrigin				= "stager"
     sshProxyOrigin				= "ssh-proxy"
     senderOrigin				= "sender"
-    routeEmitterOrigin			= "route_emitters"
+    routeEmitterOrigin			= "route_emitter"
     repOrigin					= "rep"
     receptorOrigin				= "receptor"
     nsyncListenerOrigin			= "nsync_listener"
