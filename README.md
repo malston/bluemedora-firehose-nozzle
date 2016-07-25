@@ -52,6 +52,14 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 | MetricCacheDurationSeconds | The amount of time, in seconds, the RESTful API web server will cache metric data. The higher this duration the less likely the data will be correct for a certain metric as it could hold stale data. |
 | WebServerPort | Port to connect to the RESTful API |
 
+## SSL Certificates
+
+The Blue Medora Nozzle uses SSL for it's REST webserver. In order to generate these certificates simply run the command below and answer the questions.
+
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout certs/key.pem -out certs/cert.pem
+```
+
 ## Running
 
 To run the Blue Medora nozzle simple execute:
