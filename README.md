@@ -127,3 +127,5 @@ A JSON response will be sent in the following form:
    }
 ]
 ```
+
+**NOTE**: Counter metrics are reported as totals over time. The consumer must take the delta between two totals to get the current value as time changes.
