@@ -34,7 +34,7 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
     "TrafficControllerURL": "wss://doppler.pcf.envrionment.com:443",
     "DisableAccessControl": false,
     "InsecureSSLSkipVerify": true,
-    "IdleTimeoutSeconds": 60,
+    "IdleTimeoutSeconds": 30,
     "MetricCacheDurationSeconds": 60,
     "WebServerPort": 8081
 }
