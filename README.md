@@ -46,6 +46,7 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 | UAAUsername | The UAA username that has access to read from Loggregator Firehose. |
 | UAAPassword | Password for the `UAAUsername` |
 | TrafficControllerURL | The URL for the Traffic Controller. To find this follow the instructions in the [documentation](https://docs.cloudfoundry.org/loggregator/architecture.html#firehose). |
+| SubscriptionID | The subscription ID of the nozzle. |
 | DisableAccessControl | If `true`, disables authentication with UAA. Used in lattice deployments |
 | InsecureSSLSkipVerify | If `true`, allows insecure connections to the UAA and Traffic Controller endpoints |
 | IdleTimeoutSeconds |  The amount of time, in seconds, the connection to the Firehose can be idle before disconnecting. |

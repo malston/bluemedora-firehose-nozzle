@@ -26,6 +26,7 @@ const (
     testUsername = "username"
     testPassword = "password"
     testTrafficControllerURL = "traffic_url"
+    subscriptionID = "bluemedora-nozzle"
     testDisableAccessControl = false
     testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
@@ -73,6 +74,11 @@ func TestConfigParsing(t *testing.T) {
     t.Log(fmt.Sprintf("Checking Traffic Controller URL... (expected value: %s)", testTrafficControllerURL))
     if config.TrafficControllerURL != testTrafficControllerURL {
         t.Errorf("Expected Traffic Controller URL of %s, but received %s", testTrafficControllerURL, config.TrafficControllerURL)
+    }
+
+    t.Log(fmt.Sprintf("Checking Subscription ID... (expected value: %s)", subscriptionID))
+    if config.SubscriptionID != subscriptionID {
+        t.Errorf("Expected Subscription ID of %s, but received %s", subscriptionID, config.SubscriptionID)
     }
     
     t.Log(fmt.Sprintf("Checking Disable Access Control... (expected value: %v)", testDisableAccessControl))
@@ -204,7 +210,7 @@ func createGoodConfigFile(t *testing.T) error {
     
     message := NozzleConfiguration{
         testUAAURL, testUsername, 
-        testPassword, testTrafficControllerURL, 
+        testPassword, testTrafficControllerURL, subscriptionID,
         testDisableAccessControl, testInsecureSSLSkipVerify, 
         testIdleTimeout, testMetricCacheDuration,
         testWebServerPort}

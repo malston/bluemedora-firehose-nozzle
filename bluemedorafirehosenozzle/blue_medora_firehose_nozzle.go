@@ -81,7 +81,7 @@ func (nozzle *BlueMedoraFirehoseNozzle) collectFromFirehose(authToken string) {
     debugPrinter := &BMDebugPrinter{nozzle.logger}
     nozzle.consumer.SetDebugPrinter(debugPrinter)
     nozzle.consumer.SetIdleTimeout(time.Duration(nozzle.config.IdleTimeoutSeconds) * time.Second)
-    nozzle.messages, nozzle.errs = nozzle.consumer.Firehose("bluemedora-nozzle", authToken)
+    nozzle.messages, nozzle.errs = nozzle.consumer.Firehose(nozzle.config.SubscriptionID, authToken)
 }
 
 //Method blocks until error occurs
