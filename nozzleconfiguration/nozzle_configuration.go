@@ -17,6 +17,7 @@ type NozzleConfiguration struct {
     UAAUsername                 string
     UAAPassword                 string
     TrafficControllerURL        string
+    SubscriptionID              string
     DisableAccessControl        bool
     InsecureSSLSkipVerify       bool
     IdleTimeoutSeconds          uint32
