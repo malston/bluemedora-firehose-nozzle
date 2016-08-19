@@ -3,6 +3,7 @@
     "UAAUsername": "user",
     "UAAPassword": "user_password",
     "TrafficControllerURL": "wss://doppler.pcf.bluemedora.com:443",
+    "SubscriptionID": "bluemedora-nozzle",
     "DisableAccessControl": false,
     "InsecureSSLSkipVerify": true,
     "IdleTimeoutSeconds": 60,
