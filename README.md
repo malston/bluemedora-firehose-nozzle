@@ -3,6 +3,10 @@
 
 The **bluemedora-firehose-nozzle** is a Cloud Foundry component which collects metrics for the Loggregator Firehose and exposes them via a RESTful API.
 
+## BOSH Releae
+
+The BOSH release for this nozzle can be found [here](https://github.com/BlueMedora/bluemedora-firehose-nozzle-release).
+
 ## Configure Cloud Foundry UAA for Firehose Nozzle
 
 The Blue Medora nozzle requires a UAA user who is authorized to access the loggregator firehose. You can add a user by editing your Cloud Foundry manifest to include the details about this user under the **properties.uaa.clients** section. Example configuration would look like:
