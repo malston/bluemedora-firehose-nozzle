@@ -3,7 +3,7 @@
 
 The **bluemedora-firehose-nozzle** is a Cloud Foundry component which collects metrics for the Loggregator Firehose and exposes them via a RESTful API.
 
-## BOSH Releae
+## BOSH Release
 
 The BOSH release for this nozzle can be found [here](https://github.com/BlueMedora/bluemedora-firehose-nozzle-release).
 
