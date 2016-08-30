@@ -5,6 +5,7 @@ package webserver
 
 import (
     "fmt"
+    "path/filepath"
     
     "github.com/cloudfoundry/sonde-go/events"
     "github.com/cloudfoundry/gosteno"
@@ -75,4 +76,16 @@ func getValues(resourceMap map[string]Resource) []Resource {
     }
     
     return resources
+}
+
+func getAbsolutePath(file string, logger *gosteno.Logger) string {
+    logger.Infof("Finding absolute path to $s", file)
+	absolutePath, err := filepath.Abs(file)
+
+	if err != nil {
+        logger.Warnf("Error getting absolute path to $s using relative path due to %v", file, err)
+		return file
+	}
+
+	return absolutePath
 }
