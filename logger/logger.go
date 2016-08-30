@@ -6,7 +6,9 @@ package logger
 import (
     "os"
     "fmt"
-    
+    "path/filepath"
+    "log"
+
     "github.com/cloudfoundry/gosteno"
 )
 
@@ -27,9 +29,19 @@ func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger
 
 //CreateLogDirectory clears out old directory and creates a new one
 func CreateLogDirectory(logDirectory string) {
-    if _, err := os.Stat(fmt.Sprintf("%s/", logDirectory)); err == nil {
-        os.RemoveAll(fmt.Sprintf("%s", logDirectory))
+    log.Print("Finding absolute path to log directory")
+    absoluteDirectoryPath, err := filepath.Abs(logDirectory)
+
+    if err != nil {
+        log.Printf("Error getting absolute path to log directory using relative path due to %v", err)
+        absoluteDirectoryPath = logDirectory
+    }
+
+    log.Printf("Using path %s", absoluteDirectoryPath)
+
+    if _, err := os.Stat(fmt.Sprintf("%s/", absoluteDirectoryPath)); err == nil {
+        os.RemoveAll(fmt.Sprintf("%s", absoluteDirectoryPath))
     }
     
-    os.MkdirAll(fmt.Sprintf("%s/", logDirectory), os.ModePerm)
+    os.MkdirAll(fmt.Sprintf("%s/", absoluteDirectoryPath), os.ModePerm)
 }

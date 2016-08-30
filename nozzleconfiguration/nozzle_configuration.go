@@ -7,6 +7,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "fmt"
+    "path/filepath"
     
     "github.com/cloudfoundry/gosteno"
 )
@@ -27,6 +28,8 @@ type NozzleConfiguration struct {
 
 //New NozzleConfiguration
 func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error) {
+    configPath = getAbsolutePath(configPath, logger)
+
     configBuffer, err := ioutil.ReadFile(configPath)
     
     if err != nil {
@@ -43,4 +46,16 @@ func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error
         nozzleConfig.UAAURL, nozzleConfig.UAAUsername, nozzleConfig.TrafficControllerURL, nozzleConfig.DisableAccessControl, nozzleConfig.InsecureSSLSkipVerify))
         
     return &nozzleConfig, nil
+}
+
+func getAbsolutePath(configPath string, logger *gosteno.Logger) string {
+    logger.Info("Finding absolute path to config file")
+    absoluteConfigPath, err := filepath.Abs(configPath)
+
+    if err != nil {
+        logger.Warnf("Error getting absolute path to config file use relative path due to %v", err)
+        return configPath
+    }
+
+    return absoluteConfigPath
 }
