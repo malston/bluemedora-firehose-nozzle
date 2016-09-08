@@ -5,11 +5,11 @@ The **bluemedora-firehose-nozzle** is a Cloud Foundry component which collects m
 
 ## BOSH Release
 
-The BOSH release for this nozzle can be found [here](https://github.com/BlueMedora/bluemedora-firehose-nozzle-release).
+If you wish to use BOSH to deploy the nozzle, the BOSH release for can be found [here](https://github.com/BlueMedora/bluemedora-firehose-nozzle-release).
 
 ## Configure Cloud Foundry UAA for Firehose Nozzle
 
-The Blue Medora nozzle requires a UAA user who is authorized to access the loggregator firehose. You can add a user by editing your Cloud Foundry manifest to include the details about this user under the **properties.uaa.clients** section. Example configuration would look like:
+The Blue Medora nozzle requires a UAA user who is authorized to access the loggregator firehose, has `doppler.firehose` premissions. You can add a user by editing your Cloud Foundry BOSH manifest to include the details about this user under the **properties.uaa.clients** section. Example configuration would look like:
 
 ```
 properties:
@@ -24,7 +24,9 @@ properties:
         authorities: oauth.login,doppler.firehose
 ```
 
-For more on setting up a nozzle user refer to Cloud Foundry [documentation](https://docs.cloudfoundry.org/loggregator/nozzle-tutorial.html).
+For more on setting up a nozzle user with BOSH refer to Cloud Foundry [documentation](https://docs.cloudfoundry.org/loggregator/nozzle-tutorial.html).
+
+For information on managing UAA users within Cloud Foundry refer to [this guide](https://docs.cloudfoundry.org/adminguide/uaa-user-management.html).
 
 ## Configuring Nozzle
 
@@ -36,6 +38,7 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
     "UAAUsername": "apps_metrics_processing",
     "UAAPassword": "password",
     "TrafficControllerURL": "wss://doppler.pcf.envrionment.com:443",
+    "SubscriptionID": "bluemedora-nozzle-id",
     "DisableAccessControl": false,
     "InsecureSSLSkipVerify": true,
     "IdleTimeoutSeconds": 30,
@@ -48,21 +51,21 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 |:-----------|:-----------|
 | UAAURL | The UAA login URL of the Cloud Foundry deployment. |
 | UAAUsername | The UAA username that has access to read from Loggregator Firehose. |
-| UAAPassword | Password for the `UAAUsername` |
+| UAAPassword | Password for the `UAAUsername`. |
 | TrafficControllerURL | The URL for the Traffic Controller. To find this follow the instructions in the [documentation](https://docs.cloudfoundry.org/loggregator/architecture.html#firehose). |
-| SubscriptionID | The subscription ID of the nozzle. |
-| DisableAccessControl | If `true`, disables authentication with UAA. Used in lattice deployments |
-| InsecureSSLSkipVerify | If `true`, allows insecure connections to the UAA and Traffic Controller endpoints |
+| SubscriptionID | The subscription ID of the nozzle. To find out more about subscription IDs and nozzle scaling see the [documentation](https://docs.cloudfoundry.org/loggregator/log-ops-guide.html#scaling-nozzles).|
+| DisableAccessControl | If `true`, disables authentication with UAA. Used in lattice deployments. |
+| InsecureSSLSkipVerify | If `true`, allows insecure connections to the UAA and Traffic Controller endpoints. |
 | IdleTimeoutSeconds |  The amount of time, in seconds, the connection to the Firehose can be idle before disconnecting. |
 | MetricCacheDurationSeconds | The amount of time, in seconds, the RESTful API web server will cache metric data. The higher this duration the less likely the data will be correct for a certain metric as it could hold stale data. |
-| WebServerPort | Port to connect to the RESTful API |
+| WebServerPort | Port to connect to the RESTful API. |
 
 ## SSL Certificates
 
 The Blue Medora Nozzle uses SSL for it's REST webserver. In order to generate these certificates simply run the command below and answer the questions.
 
 ```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout certs/key.pem -out certs/cert.pem
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout certs/key.pem -out certs/cert.pem
 ```
 
 ## Running
