@@ -10,6 +10,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "strings"
+    "strconv"
     
     "github.com/BlueMedora/bluemedora-firehose-nozzle/logger"
 ) 
@@ -26,12 +27,23 @@ const (
     testUsername = "username"
     testPassword = "password"
     testTrafficControllerURL = "traffic_url"
-    subscriptionID = "bluemedora-nozzle"
+    testSubscriptionID = "bluemedora-nozzle"
     testDisableAccessControl = false
     testInsecureSSLSkipVerify = false
     testIdleTimeout = uint32(60)
     testMetricCacheDuration = uint32(60)
     testWebServerPort = uint32(8081)
+
+    testEnvUAAURL = "env_UAAURL"
+    testEnvUsername = "env_username"
+    testEnvPassword = "env_password"
+    testEnvTrafficControllerURL = "env_traffic_url"
+    testEnvsubscriptionID = "env_bluemedora-nozzle"
+    testEnvDisableAccessControl = "true"
+    testEnvInsecureSSLSkipVerify = "true"
+    testEnvIdleTimeout = "120"
+    testEnvMetricCacheDuration = "90"
+    testEnvWebServerPort = "9080"
 )
 
 func TestConfigParsing(t *testing.T) {
@@ -76,9 +88,9 @@ func TestConfigParsing(t *testing.T) {
         t.Errorf("Expected Traffic Controller URL of %s, but received %s", testTrafficControllerURL, config.TrafficControllerURL)
     }
 
-    t.Log(fmt.Sprintf("Checking Subscription ID... (expected value: %s)", subscriptionID))
-    if config.SubscriptionID != subscriptionID {
-        t.Errorf("Expected Subscription ID of %s, but received %s", subscriptionID, config.SubscriptionID)
+    t.Log(fmt.Sprintf("Checking Subscription ID... (expected value: %s)", testSubscriptionID))
+    if config.SubscriptionID != testSubscriptionID {
+        t.Errorf("Expected Subscription ID of %s, but received %s", testSubscriptionID, config.SubscriptionID)
     }
     
     t.Log(fmt.Sprintf("Checking Disable Access Control... (expected value: %v)", testDisableAccessControl))
@@ -158,6 +170,100 @@ func TestNoConfigFile(t *testing.T) {
     }
 }
 
+func TestEnvironmentVariables(t *testing.T) {
+    //Setup Environment
+    err := setupGoodEnvironment(t)
+    if err != nil {
+        tearDownEnvironment(t)
+        t.Fatalf("Setup failed due to: %s", err.Error())
+    }
+    
+    t.Log("Creating configuration...")
+    logger.CreateLogDirectory(defaultLogDirectory)
+    logger := logger.New(defaultLogDirectory, nozzleLogFile, nozzleLogName)
+
+    os.Setenv(uaaURLEnv, testEnvUAAURL)
+    os.Setenv(uaaUsernameEnv, testEnvUsername)
+    os.Setenv(uaaPasswordEnv, testEnvPassword)
+    os.Setenv(trafficControllerURLEnv, testEnvTrafficControllerURL)
+    os.Setenv(subscriptionIDEnv, testEnvsubscriptionID)
+    os.Setenv(disableAccessControlEnv, testEnvDisableAccessControl)
+    os.Setenv(insecureSSLSkipVerifyEnv, testEnvInsecureSSLSkipVerify)
+    os.Setenv(idleTimeoutSecondsEnv, testEnvIdleTimeout)
+    os.Setenv(metricCacheDurationSecondsEnv, testEnvMetricCacheDuration)
+    os.Setenv(webServerPortEnv, testEnvWebServerPort)
+    
+    //Create new configuration
+    var config *NozzleConfiguration
+    config, err = New(configFile, logger)
+    
+    if err != nil {
+        tearDownEnvironment(t)
+        t.Fatalf("Error occrued while creating configuration %s", err)
+    }
+
+     //Test values
+    t.Log(fmt.Sprintf("Checking UAA URL... (expected value: %s)", testEnvUAAURL))
+    if config.UAAURL != testEnvUAAURL {
+        t.Errorf("Expected UAA URL of %s, but received %s", testEnvUAAURL, config.UAAURL)
+    }
+    
+    t.Log(fmt.Sprintf("Checking UAA Username... (expected value: %s)", testEnvUsername))
+    if config.UAAUsername != testEnvUsername {
+        t.Errorf("Expected UAA Username of %s, but received %s", testEnvUsername, config.UAAUsername)
+    }
+
+    t.Log(fmt.Sprintf("Checking UAA Password... (expected value: %s)", testEnvPassword))
+    if config.UAAPassword != testEnvPassword {
+        t.Errorf("Expected UAA Password of %s, but received %s", testEnvPassword, config.UAAPassword)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Traffic Controller URL... (expected value: %s)", testEnvTrafficControllerURL))
+    if config.TrafficControllerURL != testEnvTrafficControllerURL {
+        t.Errorf("Expected Traffic Controller URL of %s, but received %s", testEnvTrafficControllerURL, config.TrafficControllerURL)
+    }
+
+    t.Log(fmt.Sprintf("Checking Subscription ID... (expected value: %s)", testEnvsubscriptionID))
+    if config.SubscriptionID != testEnvsubscriptionID {
+        t.Errorf("Expected Subscription ID of %s, but received %s", testEnvsubscriptionID, config.SubscriptionID)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Disable Access Control... (expected value: %v)", testEnvDisableAccessControl))
+    convertedDisableAccessControlValue, _ := strconv.ParseBool(testEnvDisableAccessControl) 
+    if config.DisableAccessControl != convertedDisableAccessControlValue {
+        t.Errorf("Expected Disable Access Control of %v, but received %v", testEnvDisableAccessControl, config.DisableAccessControl)
+    }
+
+    t.Log(fmt.Sprintf("Checking Insecure SSL Skip Verify... (expected value: %v)", testEnvInsecureSSLSkipVerify))
+    convertedInsecureSSLSkipVerify, _ := strconv.ParseBool(testEnvInsecureSSLSkipVerify)
+    if config.InsecureSSLSkipVerify != convertedInsecureSSLSkipVerify {
+        t.Errorf("Expected Insecure SSL Skip Verify of %v, but received %v", testEnvInsecureSSLSkipVerify, config.InsecureSSLSkipVerify)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Idle Timeout... (expected value: %v)", testIdleTimeout))
+    convertedtestEnvIdleTimeout, _ := strconv.Atoi(testEnvIdleTimeout)
+    if config.IdleTimeoutSeconds != uint32(convertedtestEnvIdleTimeout) {
+        t.Errorf("Expected Idle Timeout of %v, but received %v", testIdleTimeout, config.IdleTimeoutSeconds)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Metric Cache Duration... (expected value: %v)", testMetricCacheDuration))
+    convertedtestEnvMetricCacheDuration, _ := strconv.Atoi(testEnvMetricCacheDuration)
+    if config.MetricCacheDurationSeconds != uint32(convertedtestEnvMetricCacheDuration) {
+        t.Errorf("Expected Metric Cache Duration of %v, but received %v", testMetricCacheDuration, config.MetricCacheDurationSeconds)
+    }
+    
+    t.Log(fmt.Sprintf("Checking Web Server Port... (expected value: %v)", testWebServerPort))
+    convertedtestEnvWebServerPort, _ := strconv.Atoi(testEnvWebServerPort)
+    if config.WebServerPort != uint32(convertedtestEnvWebServerPort) {
+        t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerPort, config.WebServerPort)
+    }
+    
+    err = tearDownEnvironment(t)
+    if err != nil {
+        t.Fatalf("Tear down failed due to: %s", err.Error())
+    }
+}
+
 func setupGoodEnvironment(t *testing.T) error {
     t.Log("Setting up good environment...")
     
@@ -210,7 +316,7 @@ func createGoodConfigFile(t *testing.T) error {
     
     message := NozzleConfiguration{
         testUAAURL, testUsername, 
-        testPassword, testTrafficControllerURL, subscriptionID,
+        testPassword, testTrafficControllerURL, testSubscriptionID,
         testDisableAccessControl, testInsecureSSLSkipVerify, 
         testIdleTimeout, testMetricCacheDuration,
         testWebServerPort}

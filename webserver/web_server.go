@@ -98,7 +98,7 @@ func (webserver *WebServer) TokenTimeout(token *webtoken.Token) {
 /**Handlers**/
 func (webserver *WebServer) tokenHandler(w http.ResponseWriter, r *http.Request) {
 	webserver.logger.Info("Received /token request")
-	if r.Method == http.MethodGet {
+	if r.Method == "GET" {
 		username := r.Header.Get(headerUsernameKey)
 		password := r.Header.Get(headerPasswordKey)
 
@@ -306,7 +306,7 @@ func (webserver *WebServer) processResourceRequest(originType string, w http.Res
 	webserver.mutext.Lock()
 	defer webserver.mutext.Unlock()
 	
-	if r.Method == http.MethodGet {
+	if r.Method == "GET" {
 		tokenString := r.Header.Get(headerTokenKey)
 		
 		token := webserver.tokens[tokenString]
