@@ -60,6 +60,24 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 | MetricCacheDurationSeconds | The amount of time, in seconds, the RESTful API web server will cache metric data. The higher this duration the less likely the data will be correct for a certain metric as it could hold stale data. |
 | WebServerPort | Port to connect to the RESTful API. |
 
+### Environment Variables
+
+The nozzle can also be configured by setting a set of environment variables. The variables and what config field they map to are listed below.
+
+|Environment Variable | Config Field |
+|:-----------|:-----------|
+| BM_UAA_URL | UAAURL |
+| BM_UAA_USERNAME | UAAUsername |
+| BM_UAA_PASSWORD | UAAPassword |
+| BM_TRAFFIC_CONTROLLER_URL | TrafficControllerURL |
+| BM_SUBSCRIPTION_ID | SubscriptionID |
+| BM_DISABLE_ACCESS_CONTROL | DisableAccessControl |
+| BM_INSECURE_SSL_SKIP_VERIFY | InsecureSSLSkipVerify |
+| BM_IDLE_TIMEOUT_SECONDS | IdleTimeoutSeconds |
+| BM_METRIC_CACHE_DURATION_SECONDS | MetricCacheDurationSeconds |
+| BM_METRIC_CACHE_DURATION_SECONDS | WebServerPort |
+
+
 ## SSL Certificates
 
 The Blue Medora Nozzle uses SSL for it's REST webserver. In order to generate these certificates simply run the command below and answer the questions.
