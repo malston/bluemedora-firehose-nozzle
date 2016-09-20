@@ -75,7 +75,7 @@ The nozzle can also be configured by setting a set of environment variables. The
 | BM_INSECURE_SSL_SKIP_VERIFY | InsecureSSLSkipVerify |
 | BM_IDLE_TIMEOUT_SECONDS | IdleTimeoutSeconds |
 | BM_METRIC_CACHE_DURATION_SECONDS | MetricCacheDurationSeconds |
-| BM_METRIC_CACHE_DURATION_SECONDS | WebServerPort |
+| BM_WEB_SERVER_PORT | WebServerPort |
 
 
 ## SSL Certificates
