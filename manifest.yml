@@ -1,0 +1,18 @@
+---
+applications:
+- name: bm-nozzle
+  memory: 512M
+  buildpack: go_buildpack
+  instances: 1
+  host: bm-nozzle
+  env:
+    BM_UAA_URL: https://uaa.pcf.bluemedora.localnet
+    BM_UAA_USERNAME: apps_metrics_processing
+    BM_UAA_PASSWORD: d5fb15c94a78d0f86215
+    BM_TRAFFIC_CONTROLLER_URL: wss://doppler.pcf.bluemedora.localnet:443
+    BM_SUBSCRIPTION_ID: bluemedora-nozzle-app
+    BM_DISABLE_ACCESS_CONTROL: false
+    BM_INSECURE_SSL_SKIP_VERIFY: true
+    BM_IDLE_TIMEOUT_SECONDS: 60
+    BM_METRIC_CACHE_DURATION_SECONDS: 90
+    BM_WEB_SERVER_PORT: 9080
