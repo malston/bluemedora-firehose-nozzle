@@ -3,24 +3,49 @@
 
 package logger
 
+
 import (
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/cloudfoundry/gosteno"
+)
+
+const (
+	stdOutLogging = "BM_STDOUT_LOGGING"
 )
 
 //New logger
 func New(logDirectory string, logFile string, loggerName string) *gosteno.Logger {
 	loggingConfig := &gosteno.Config{
-		Sinks: []gosteno.Sink{
-			gosteno.NewFileSink(fmt.Sprintf("%s/%s", getAbsolutePath(logDirectory), logFile)),
-		},
+		Sinks:		 make([]gosteno.Sink, 1),
 		Level:     gosteno.LOG_DEBUG,
 		Codec:     gosteno.NewJsonCodec(),
 		EnableLOC: true,
+	}
+
+
+	//todo check value of env var
+	if envValue := os.Getenv(stdOutLogging); envValue != "" {
+		value, err := strconv.ParseBool(envValue)
+
+		if err != nil {
+			log.Fatalf("Failed to read in environment variable %s due to %v", stdOutLogging, err)
+		}
+
+		if (value) {
+			log.Print("Logging to stdout")
+			loggingConfig.Sinks[0] = gosteno.NewIOSink(os.Stdout)
+		} else {
+			log.Print("Logging to file")
+			loggingConfig.Sinks[0] = gosteno.NewFileSink(fmt.Sprintf("%s/%s", getAbsolutePath(logDirectory), logFile))
+		}
+	} else {
+		log.Print("Logging to file")
+		loggingConfig.Sinks[0] = gosteno.NewFileSink(fmt.Sprintf("%s/%s", getAbsolutePath(logDirectory), logFile))
 	}
 
 	gosteno.Init(loggingConfig)

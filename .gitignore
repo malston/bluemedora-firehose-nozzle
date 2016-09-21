@@ -26,3 +26,10 @@ _testmain.go
 
 #Certfiles
 certs/*.pem
+
+#Godep Folders
+Godeps/
+vendor/
+
+Binary
+bluemedora-firehose-nozzle
