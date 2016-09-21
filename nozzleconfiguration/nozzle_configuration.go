@@ -24,7 +24,7 @@ const (
 	insecureSSLSkipVerifyEnv      = "BM_INSECURE_SSL_SKIP_VERIFY"
 	idleTimeoutSecondsEnv         = "BM_IDLE_TIMEOUT_SECONDS"
 	metricCacheDurationSecondsEnv = "BM_METRIC_CACHE_DURATION_SECONDS"
-	webServerPortEnv              = "BM_WEB_SERVER_PORT"
+	webServerPortEnv              = "PORT"
 )
 
 //NozzleConfiguration represents configuration file

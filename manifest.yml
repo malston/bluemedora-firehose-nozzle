@@ -2,6 +2,7 @@
 applications:
 - name: bm-nozzle
   memory: 1G
+  disk_quota: 2G
   buildpack: go_buildpack
   instances: 1
   host: bm-nozzle
@@ -15,5 +16,5 @@ applications:
     BM_INSECURE_SSL_SKIP_VERIFY: true
     BM_IDLE_TIMEOUT_SECONDS: 60
     BM_METRIC_CACHE_DURATION_SECONDS: 90
-    BM_WEB_SERVER_PORT: 9080
+    PORT: 9080
     BM_STDOUT_LOGGING: true
