@@ -43,7 +43,8 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
     "InsecureSSLSkipVerify": true,
     "IdleTimeoutSeconds": 30,
     "MetricCacheDurationSeconds": 60,
-    "WebServerPort": 8081
+    "WebServerPort": 8081,
+    "WebServerUseSSL": true
 }
 ```
 
@@ -59,6 +60,7 @@ The Blue Medora Nozzle uses a configuration file, located at `config/bluemedora-
 | IdleTimeoutSeconds |  The amount of time, in seconds, the connection to the Firehose can be idle before disconnecting. |
 | MetricCacheDurationSeconds | The amount of time, in seconds, the RESTful API web server will cache metric data. The higher this duration the less likely the data will be correct for a certain metric as it could hold stale data. |
 | WebServerPort | Port to connect to the RESTful API. |
+| WebServerUseSSL | If `true` the RESTful API web server will use HTTPS, else it uses HTTP  |
 
 ### Environment Variables
 
@@ -75,13 +77,14 @@ The nozzle can also be configured by setting a set of environment variables. The
 | BM_INSECURE_SSL_SKIP_VERIFY | InsecureSSLSkipVerify |
 | BM_IDLE_TIMEOUT_SECONDS | IdleTimeoutSeconds |
 | BM_METRIC_CACHE_DURATION_SECONDS | MetricCacheDurationSeconds |
-| BM_WEB_SERVER_PORT | WebServerPort |
-| BM_STDOUT_LOGGING | Does not correspond to a config field, but signals if logging should save to files or straight to stdout |
+| PORT | WebServerPort |
+| BM_WEBSERVER_USE_SSL | WebServerUseSSL |
+| BM_STDOUT_LOGGING | Does not correspond to a config field, but signals if logging should save to files or straight to stdout. |
 
 
 ## SSL Certificates
 
-The Blue Medora Nozzle uses SSL for it's REST webserver. In order to generate these certificates simply run the command below and answer the questions.
+The Blue Medora Nozzle uses SSL for it's REST web server if the `WebServerUseSSL` flag is set to true. In order to generate these certificates simply run the command below and answer the questions.
 
 ```
 openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout certs/key.pem -out certs/cert.pem

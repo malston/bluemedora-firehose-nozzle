@@ -81,8 +81,11 @@ func (webserver *WebServer) Start(keyLocation string, certLocation string) <-cha
 	errors := make(chan error, 1)
 	go func() {
 		defer close(errors)
-		errors <- http.ListenAndServeTLS(fmt.Sprintf(":%v", webserver.config.WebServerPort), getAbsolutePath(certLocation, webserver.logger), 
-		getAbsolutePath(keyLocation, webserver.logger), nil)
+		if webserver.config.WebServerUseSSL {
+		errors <- http.ListenAndServeTLS(fmt.Sprintf(":%v", webserver.config.WebServerPort), getAbsolutePath(certLocation, webserver.logger), getAbsolutePath(keyLocation, webserver.logger), nil)
+		} else {
+			errors <- http.ListenAndServe(fmt.Sprintf(":%v",webserver.config.WebServerPort), nil)
+		}
 	}()
 	return errors
 }
