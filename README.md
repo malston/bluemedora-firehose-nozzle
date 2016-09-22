@@ -79,7 +79,7 @@ The nozzle can also be configured by setting a set of environment variables. The
 | BM_METRIC_CACHE_DURATION_SECONDS | MetricCacheDurationSeconds |
 | PORT | WebServerPort |
 | BM_WEBSERVER_USE_SSL | WebServerUseSSL |
-| BM_STDOUT_LOGGING | Does not correspond to a config field, but signals if logging should save to files or straight to stdout |
+| BM_STDOUT_LOGGING | Does not correspond to a config field, but signals if logging should save to files or straight to stdout. |
 
 
 ## SSL Certificates
