@@ -33,6 +33,7 @@ const (
     testIdleTimeout = uint32(60)
     testMetricCacheDuration = uint32(60)
     testWebServerPort = uint32(8081)
+    testWebServerUseSSL = true
 
     testEnvUAAURL = "env_UAAURL"
     testEnvUsername = "env_username"
@@ -44,6 +45,7 @@ const (
     testEnvIdleTimeout = "120"
     testEnvMetricCacheDuration = "90"
     testEnvWebServerPort = "9080"
+    testEnvWebServerUseSSL = "true"
 )
 
 func TestConfigParsing(t *testing.T) {
@@ -116,6 +118,11 @@ func TestConfigParsing(t *testing.T) {
     t.Log(fmt.Sprintf("Checking Web Server Port... (expected value: %v)", testWebServerPort))
     if config.WebServerPort != testWebServerPort {
         t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerPort, config.WebServerPort)
+    }
+
+    t.Log(fmt.Sprintf("Checking Web Server Use SSL... (expected value: %v)", testWebServerUseSSL))
+    if config.WebServerUseSSL != testWebServerUseSSL {
+        t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerUseSSL, config.WebServerPort)
     }
     
     err = tearDownEnvironment(t)
@@ -192,6 +199,7 @@ func TestEnvironmentVariables(t *testing.T) {
     os.Setenv(idleTimeoutSecondsEnv, testEnvIdleTimeout)
     os.Setenv(metricCacheDurationSecondsEnv, testEnvMetricCacheDuration)
     os.Setenv(webServerPortEnv, testEnvWebServerPort)
+    os.Setenv(webServerUseSSLENV, testEnvWebServerUseSSL)
     
     //Create new configuration
     var config *NozzleConfiguration
@@ -257,6 +265,12 @@ func TestEnvironmentVariables(t *testing.T) {
     if config.WebServerPort != uint32(convertedtestEnvWebServerPort) {
         t.Errorf("Expected Web Server Port of %v, but received %v", testWebServerPort, config.WebServerPort)
     }
+
+    t.Log(fmt.Sprintf("Checking Web Server Use SSL... (expected value: %v)", testEnvWebServerUseSSL))
+    convertedtestEnvWebServerUseSSL, _ := strconv.ParseBool(testEnvWebServerUseSSL)
+    if config.WebServerUseSSL != convertedtestEnvWebServerUseSSL {
+        t.Errorf("Expected Web Server Port of %v, but received %v", testEnvWebServerUseSSL, config.WebServerPort)
+    }
     
     err = tearDownEnvironment(t)
     if err != nil {
@@ -319,7 +333,7 @@ func createGoodConfigFile(t *testing.T) error {
         testPassword, testTrafficControllerURL, testSubscriptionID,
         testDisableAccessControl, testInsecureSSLSkipVerify, 
         testIdleTimeout, testMetricCacheDuration,
-        testWebServerPort}
+        testWebServerPort, testWebServerUseSSL}
         
     messageBytes, _ := json.Marshal(message)
     

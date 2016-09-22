@@ -24,7 +24,8 @@ const (
 	insecureSSLSkipVerifyEnv      = "BM_INSECURE_SSL_SKIP_VERIFY"
 	idleTimeoutSecondsEnv         = "BM_IDLE_TIMEOUT_SECONDS"
 	metricCacheDurationSecondsEnv = "BM_METRIC_CACHE_DURATION_SECONDS"
-	webServerPortEnv              = "BM_WEB_SERVER_PORT"
+	webServerPortEnv              = "PORT"
+	webServerUseSSLENV            = "BM_WEBSERVER_USE_SSL"
 )
 
 //NozzleConfiguration represents configuration file
@@ -39,6 +40,7 @@ type NozzleConfiguration struct {
 	IdleTimeoutSeconds         uint32
 	MetricCacheDurationSeconds uint32
 	WebServerPort              uint32
+	WebServerUseSSL			   bool
 }
 
 //New NozzleConfiguration
@@ -67,6 +69,7 @@ func New(configPath string, logger *gosteno.Logger) (*NozzleConfiguration, error
 	overrideWithEnvUint32(idleTimeoutSecondsEnv, &nozzleConfig.IdleTimeoutSeconds)
 	overrideWithEnvUint32(metricCacheDurationSecondsEnv, &nozzleConfig.MetricCacheDurationSeconds)
 	overrideWithEnvUint32(webServerPortEnv, &nozzleConfig.WebServerPort)
+	overrideWithEnvBool(webServerUseSSLENV, &nozzleConfig.WebServerUseSSL)
 
 	logger.Debug(fmt.Sprintf("Loaded configuration to UAAURL <%s>, UAA Username <%s>, Traffic Controller URL <%s>, Disable Access Control <%v>, Insecure SSL Skip Verify <%v>",
 		nozzleConfig.UAAURL, nozzleConfig.UAAUsername, nozzleConfig.TrafficControllerURL, nozzleConfig.DisableAccessControl, nozzleConfig.InsecureSSLSkipVerify))

@@ -8,5 +8,6 @@
     "InsecureSSLSkipVerify": true,
     "IdleTimeoutSeconds": 60,
     "MetricCacheDurationSeconds": 90,
-    "WebServerPort": 8081
+    "WebServerPort": 8081,
+    "WebServerUseSSL": true
 }
