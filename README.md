@@ -7,6 +7,10 @@ The **bluemedora-firehose-nozzle** is a Cloud Foundry component which collects m
 
 If you wish to use BOSH to deploy the nozzle, the BOSH release for can be found [here](https://github.com/BlueMedora/bluemedora-firehose-nozzle-release).
 
+## Deploying as CF App
+
+The nozzle is deployable via [cf-cli](https://github.com/cloudfoundry/cli). The `manifest.yml` is setup in a default configuration to be deployed as a cf app. The `BM_WEBSERVER_USE_SSL` environment variable in the `manifest.yml` **must** be set to `false` during a cf app deployment as internal cloud foundry communication does not use SSL. It is also advisable to keep the `BM_STDOUT_LOGGING` environment variable as `true`, or else the log files could grow rather fast and use up the allocated disk space.
+
 ## Configure Cloud Foundry UAA for Firehose Nozzle
 
 The Blue Medora nozzle requires a UAA user who is authorized to access the loggregator firehose, has `doppler.firehose` premissions. You can add a user by editing your Cloud Foundry BOSH manifest to include the details about this user under the **properties.uaa.clients** section. Example configuration would look like:
