@@ -6,10 +6,10 @@ applications:
   instances: 1
   host: bm-nozzle
   env:
-    BM_UAA_URL: https://uaa.pcf.bluemedora.localnet
-    BM_UAA_USERNAME: apps_metrics_processing
-    BM_UAA_PASSWORD: d5fb15c94a78d0f86215
-    BM_TRAFFIC_CONTROLLER_URL: wss://doppler.pcf.bluemedora.localnet:443
+    BM_UAA_URL: https://uaa.pcf.bluemedora.com
+    BM_UAA_USERNAME: user
+    BM_UAA_PASSWORD: user_password
+    BM_TRAFFIC_CONTROLLER_URL: wss://doppler.pcf.bluemedora.com:443
     BM_SUBSCRIPTION_ID: bluemedora-nozzle-app
     BM_DISABLE_ACCESS_CONTROL: false
     BM_INSECURE_SSL_SKIP_VERIFY: true
