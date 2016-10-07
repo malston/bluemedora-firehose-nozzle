@@ -1,4 +1,4 @@
-ompiled Object files, Static and Dynamic libs (Shared Objects)
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
 *.so
@@ -6,8 +6,6 @@ ompiled Object files, Static and Dynamic libs (Shared Objects)
 # Folders
 _obj
 _test
-logs
-resources
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -22,14 +20,3 @@ _cgo_export.*
 _testmain.go
 
 *.exe
-*.test
-*.prof
-
-#Certfiles
-certs/*.pem
-
-#Binary
-bluemedora-firehose-nozzle
-
-#Tile
-tile.yml
